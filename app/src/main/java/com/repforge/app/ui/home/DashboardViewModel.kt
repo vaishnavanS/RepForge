@@ -8,6 +8,7 @@ import com.repforge.app.domain.PplEngine
 import com.repforge.app.domain.QuotesEngine
 import com.repforge.app.domain.WorkoutDay
 import com.repforge.app.repository.WorkoutRepository
+import com.repforge.app.data.entities.ExerciseLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
