@@ -10,19 +10,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.repforge.app.domain.PplEngine
-import com.repforge.app.domain.QuotesEngine
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun DashboardScreen() {
-    val quote = remember { QuotesEngine.getRandomQuote() }
-    val nextWorkout = remember { PplEngine.getNextWorkout(null) } // TODO: Fetch real last workout
-    
-    var cardioTimeRemaining by remember { mutableStateOf(1200) } // 20 mins in seconds
-    var isCardioRunning by remember { mutableStateOf(false) }
+fun DashboardScreen(
+    onStartWorkout: () -> Unit,
+    viewModel: DashboardViewModel = viewModel()
+) {
+    val state by viewModel.state.collectAsState()
 
-    // Dummy timer logic (LaunchEffect would handle actual ticking)
-    
+    LaunchedEffect(state.isCardioRunning) {
+        while(state.isCardioRunning && state.cardioTimeRemaining > 0) {
+            delay(1000L)
+            viewModel.tickCardio()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,7 +39,7 @@ fun DashboardScreen() {
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Text(
-                text = "\"$quote\"",
+                text = "\"${state.quote}\"",
                 modifier = Modifier.padding(16.dp),
                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
                 fontWeight = FontWeight.Bold,
@@ -43,7 +47,25 @@ fun DashboardScreen() {
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Stats Row
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Card(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+                Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Total Sessions", fontSize = 12.sp)
+                    Text("${state.totalWorkouts}", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+            Card(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
+                Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Current Streak", fontSize = 12.sp)
+                    Text("${state.currentStreak} days", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Next Workout Engine
         Text(
@@ -61,18 +83,18 @@ fun DashboardScreen() {
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = "Day ${nextWorkout.dayIndex}: ${nextWorkout.title}",
+                    text = "Day ${state.nextWorkout.dayIndex}: ${state.nextWorkout.title}",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.secondary
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = nextWorkout.exercises.joinToString(" • "))
+                Text(text = state.nextWorkout.exercises.joinToString(" • "))
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 Button(
-                    onClick = { /* TODO: Start Workout */ },
+                    onClick = onStartWorkout,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("START SESSION")
@@ -101,13 +123,16 @@ fun DashboardScreen() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "${cardioTimeRemaining / 60}:${String.format("%02d", cardioTimeRemaining % 60)}",
+                text = "${state.cardioTimeRemaining / 60}:${String.format("%02d", state.cardioTimeRemaining % 60)}",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
             
-            Button(onClick = { isCardioRunning = !isCardioRunning }) {
-                Text(if (isCardioRunning) "PAUSE" else "START")
+            Button(
+                onClick = { viewModel.toggleCardio() },
+                enabled = state.cardioTimeRemaining > 0
+            ) {
+                Text(if (state.cardioTimeRemaining == 0) "DONE" else if (state.isCardioRunning) "PAUSE" else "START")
             }
         }
     }

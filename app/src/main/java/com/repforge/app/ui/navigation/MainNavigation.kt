@@ -8,18 +8,26 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.repforge.app.ui.auth.AuthViewModel
 import com.repforge.app.ui.auth.LoginScreen
 import com.repforge.app.ui.auth.SignupScreen
 import com.repforge.app.ui.home.DashboardScreen
 import com.repforge.app.ui.profile.ProfileScreen
+import com.repforge.app.ui.workout.WorkoutSessionScreen
+import com.repforge.app.ui.analytics.AnalyticsScreen
+import com.repforge.app.ui.history.HistoryScreen
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector?) {
     object Login : Screen("login", "Login", null)
@@ -28,10 +36,20 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     object Workout : Screen("workout", "Workout", Icons.Filled.FitnessCenter)
     object Analytics : Screen("analytics", "Analytics", Icons.Filled.Analytics)
     object Profile : Screen("profile", "Profile", Icons.Filled.Person)
+    object History : Screen("history", "History", null)
 }
 
 @Composable
-fun MainAppScreen() {
+fun MainAppScreen(viewModel: AuthViewModel = viewModel()) {
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+
+    if (isLoggedIn == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -71,7 +89,7 @@ fun MainAppScreen() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Login.route,
+            startDestination = if (isLoggedIn == true) Screen.Home.route else Screen.Login.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Login.route) {
@@ -87,22 +105,34 @@ fun MainAppScreen() {
                 )
             }
             composable(Screen.Home.route) {
-                DashboardScreen()
+                DashboardScreen(
+                    onStartWorkout = { navController.navigate(Screen.Workout.route) }
+                )
             }
             composable(Screen.Workout.route) {
-                Text("Workout Screen Placeholder", modifier = Modifier.padding(16.dp))
+                WorkoutSessionScreen(
+                    onFinish = { 
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Home.route) { inclusive = false }
+                        }
+                    }
+                )
             }
             composable(Screen.Analytics.route) {
-                Text("Analytics Screen Placeholder", modifier = Modifier.padding(16.dp))
+                AnalyticsScreen()
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(
+                    onNavigateToHistory = { navController.navigate(Screen.History.route) },
                     onLogout = {
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0)
                         }
                     }
                 )
+            }
+            composable(Screen.History.route) {
+                HistoryScreen(onBack = { navController.popBackStack() })
             }
         }
     }

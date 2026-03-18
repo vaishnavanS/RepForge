@@ -8,10 +8,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.repforge.app.ui.auth.AuthViewModel
 
 @Composable
-fun ProfileScreen(onLogout: () -> Unit) {
+fun ProfileScreen(
+    onNavigateToHistory: () -> Unit,
+    onLogout: () -> Unit,
+    viewModel: AuthViewModel = viewModel()
+) {
     var isDarkMode by remember { mutableStateOf(true) }
+    val userName by viewModel.userName.collectAsState()
+    val height by viewModel.height.collectAsState()
+    val weight by viewModel.weight.collectAsState()
+    val fitnessGoal by viewModel.fitnessGoal.collectAsState()
+
+    var isEditing by remember { mutableStateOf(false) }
+    var editHeight by remember(height) { mutableStateOf(height) }
+    var editWeight by remember(weight) { mutableStateOf(weight) }
+    var editGoal by remember(fitnessGoal) { mutableStateOf(fitnessGoal) }
 
     Column(
         modifier = Modifier
@@ -28,14 +43,63 @@ fun ProfileScreen(onLogout: () -> Unit) {
             color = MaterialTheme.colorScheme.primaryContainer
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Text("JD", fontSize = 40.sp, fontWeight = FontWeight.Bold)
+                Text(userName.take(2).uppercase(), fontSize = 40.sp, fontWeight = FontWeight.Bold)
             }
         }
         
         Spacer(modifier = Modifier.height(16.dp))
-        Text("John Doe", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Text(userName, fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Text("Joined: Oct 2023", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
         
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        if (isEditing) {
+            OutlinedTextField(
+                value = editHeight,
+                onValueChange = { editHeight = it },
+                label = { Text("Height (cm/in)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = editWeight,
+                onValueChange = { editWeight = it },
+                label = { Text("Weight (kg/lbs)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = editGoal,
+                onValueChange = { editGoal = it },
+                label = { Text("Fitness Goal") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    viewModel.updateProfile(editHeight, editWeight, editGoal)
+                    isEditing = false
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Save Profile")
+            }
+        } else {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Height: ${if (height.isNotBlank()) height else "Not set"}")
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("Weight: ${if (weight.isNotBlank()) weight else "Not set"}")
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text("Goal: ${if (fitnessGoal.isNotBlank()) fitnessGoal else "Not set"}")
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            TextButton(onClick = { isEditing = true }) {
+                Text("Edit Profile Details")
+            }
+        }
+
         Spacer(modifier = Modifier.height(32.dp))
 
         Card(modifier = Modifier.fillMaxWidth()) {
@@ -60,8 +124,18 @@ fun ProfileScreen(onLogout: () -> Unit) {
         
         Spacer(modifier = Modifier.weight(1f))
         
+        Button(
+            onClick = onNavigateToHistory,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+        ) {
+            Text("VIEW WORKOUT HISTORY")
+        }
+
         OutlinedButton(
-            onClick = onLogout,
+            onClick = {
+                viewModel.logout()
+                onLogout()
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("LOGOUT", color = MaterialTheme.colorScheme.error)

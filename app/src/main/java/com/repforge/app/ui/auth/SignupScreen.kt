@@ -11,14 +11,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignupScreen(onSignupSuccess: () -> Unit, onNavigateToLogin: () -> Unit) {
+fun SignupScreen(
+    onSignupSuccess: () -> Unit,
+    onNavigateToLogin: () -> Unit,
+    viewModel: AuthViewModel = viewModel()
+) {
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -76,8 +82,25 @@ fun SignupScreen(onSignupSuccess: () -> Unit, onNavigateToLogin: () -> Unit) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage!!,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+
         Button(
-            onClick = { onSignupSuccess() },
+            onClick = {
+                viewModel.signup(
+                    name = fullName,
+                    email = email,
+                    pass = password,
+                    confirm = confirmPassword,
+                    onSuccess = onSignupSuccess,
+                    onError = { errorMessage = it }
+                )
+            },
             modifier = Modifier.fillMaxWidth().height(50.dp)
         ) {
             Text("SIGN UP")
