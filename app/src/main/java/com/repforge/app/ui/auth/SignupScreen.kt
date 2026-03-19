@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(
     onSignupSuccess: () -> Unit,
@@ -40,16 +39,13 @@ fun SignupScreen(
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 32.dp)
         )
-
         OutlinedTextField(
             value = fullName,
             onValueChange = { fullName = it },
             label = { Text("Full Name") },
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -57,9 +53,7 @@ fun SignupScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -68,9 +62,7 @@ fun SignupScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
@@ -79,9 +71,7 @@ fun SignupScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth()
         )
-
         Spacer(modifier = Modifier.height(32.dp))
-
         if (errorMessage != null) {
             Text(
                 text = errorMessage!!,
@@ -89,9 +79,9 @@ fun SignupScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
         }
-
         Button(
             onClick = {
+                // ✅ FIXED - signup function now exists in AuthViewModel
                 viewModel.signup(
                     name = fullName,
                     email = email,
@@ -101,13 +91,13 @@ fun SignupScreen(
                     onError = { errorMessage = it }
                 )
             },
-            modifier = Modifier.fillMaxWidth().height(50.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
         ) {
             Text("SIGN UP")
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         TextButton(onClick = onNavigateToLogin) {
             Text("Already have an account? Login")
         }
