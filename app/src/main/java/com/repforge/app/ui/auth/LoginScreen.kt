@@ -1,113 +1,98 @@
 package com.repforge.app.ui.auth
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import com.repforge.app.data.UserPreferences
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import java.util.UUID
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
-class AuthViewModel(application: Application) : AndroidViewModel(application) {
-    private val prefs = UserPreferences(application)
+@Composable
+fun LoginScreen(
+    onLoginSuccess: () -> Unit,
+    onNavigateToSignup: () -> Unit,
+    viewModel: AuthViewModel = viewModel()
+) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    val isLoggedIn: StateFlow<Boolean?> = prefs.isLoggedInFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
-
-    val userName: StateFlow<String> = prefs.userNameFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Guest")
-
-    val userEmail: StateFlow<String> = prefs.userEmailFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
-
-    val height: StateFlow<String> = prefs.heightFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
-
-    val weight: StateFlow<String> = prefs.weightFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
-
-    val fitnessGoal: StateFlow<String> = prefs.fitnessGoalFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
-
-    val isDarkMode: StateFlow<Boolean> = prefs.isDarkModeFlow
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
-
-    // ✅ FIXED - matches what LoginScreen calls
-    fun login(
-        email: String,
-        pass: String,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        viewModelScope.launch {
-            if (email.isBlank() || pass.isBlank()) {
-                onError("Email and password cannot be empty")
-                return@launch
-            }
-            if (pass.length < 6) {
-                onError("Password must be at least 6 characters")
-                return@launch
-            }
-            // Save session with email as both id and name (no backend)
-            prefs.saveUserSession(
-                id = UUID.randomUUID().toString(),
-                name = email.substringBefore("@"),
-                email = email
+        Text(
+            text = "REPFORGE",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Text(
+            text = "Intelligent Strength Assistant",
+            fontSize = 16.sp,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+            modifier = Modifier.padding(bottom = 48.dp)
+        )
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage!!,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 8.dp)
             )
-            onSuccess()
         }
-    }
-
-    // ✅ FIXED - matches what SignupScreen calls
-    fun signup(
-        name: String,
-        email: String,
-        pass: String,
-        confirm: String,
-        onSuccess: () -> Unit,
-        onError: (String) -> Unit
-    ) {
-        viewModelScope.launch {
-            when {
-                name.isBlank() -> onError("Name cannot be empty")
-                email.isBlank() -> onError("Email cannot be empty")
-                pass.length < 6 -> onError("Password must be at least 6 characters")
-                pass != confirm -> onError("Passwords do not match")
-                else -> {
-                    prefs.saveUserSession(
-                        id = UUID.randomUUID().toString(),
-                        name = name,
-                        email = email
-                    )
-                    onSuccess()
-                }
+        Button(
+            onClick = {
+                viewModel.login(
+                    email = email,
+                    pass = password,
+                    onSuccess = onLoginSuccess,
+                    onError = { errorMessage = it }
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+            Text("LOGIN")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextButton(onClick = onNavigateToSignup) {
+                Text("Create Account")
             }
-        }
-    }
-
-    fun updateProfile(height: String, weight: String, goal: String) {
-        viewModelScope.launch {
-            prefs.updateProfile(height, weight, goal)
-        }
-    }
-
-    fun updateName(name: String) {
-        viewModelScope.launch {
-            prefs.updateName(name)
-        }
-    }
-
-    fun setDarkMode(enabled: Boolean) {
-        viewModelScope.launch {
-            prefs.setDarkMode(enabled)
-        }
-    }
-
-    fun logout() {
-        viewModelScope.launch {
-            prefs.clearSession()
+            TextButton(onClick = { }) {
+                Text("Forgot Password?")
+            }
         }
     }
 }
