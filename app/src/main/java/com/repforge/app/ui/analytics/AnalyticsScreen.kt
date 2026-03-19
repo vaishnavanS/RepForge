@@ -1,8 +1,10 @@
 package com.repforge.app.ui.analytics
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -11,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -19,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.Canvas
 
 @Composable
 fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
@@ -128,7 +128,6 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                             val h = size.height
                             val stepX = w / (points.size - 1).coerceAtLeast(1)
 
-                            // Draw grid lines
                             repeat(4) { i ->
                                 val y = h * i / 3f
                                 drawLine(
@@ -139,7 +138,6 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                                 )
                             }
 
-                            // Draw line
                             val path = Path()
                             points.forEachIndexed { index, weight ->
                                 val x = index * stepX
@@ -148,7 +146,6 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                             }
                             drawPath(path, primaryColor, style = Stroke(width = 4f))
 
-                            // Draw dots
                             points.forEachIndexed { index, weight ->
                                 val x = index * stepX
                                 val y = h - ((weight - minW) / range * h * 0.85f) - h * 0.05f
@@ -196,7 +193,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
             }
         }
 
-        // Personal Records
+        // Personal Records header
         item {
             Text(
                 "TOP PERSONAL RECORDS",
@@ -205,9 +202,9 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                 letterSpacing = 2.sp
             )
-            Spacer(modifier = Modifier.height(8.dp))
         }
 
+        // ✅ FIXED - itemsIndexed inside LazyListScope
         if (state.personalRecords.isNotEmpty()) {
             itemsIndexed(state.personalRecords) { index, pr ->
                 Box(
@@ -239,7 +236,8 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                             ) {
                                 Text(
                                     text = when (index) {
-                                        0 -> "🥇"; 1 -> "🥈"; 2 -> "🥉"; else -> "${index + 1}"
+                                        0 -> "🥇"; 1 -> "🥈"; 2 -> "🥉"
+                                        else -> "${index + 1}"
                                     },
                                     fontSize = if (index < 3) 18.sp else 14.sp,
                                     fontWeight = FontWeight.Bold
