@@ -17,7 +17,8 @@ fun ProfileScreen(
     onLogout: () -> Unit,
     viewModel: AuthViewModel = viewModel()
 ) {
-    var isDarkMode by remember { mutableStateOf(true) }
+    // ✅ Read dark mode from ViewModel (persisted), not local remember
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
     val userName by viewModel.userName.collectAsState()
     val height by viewModel.height.collectAsState()
     val weight by viewModel.weight.collectAsState()
@@ -35,8 +36,7 @@ fun ProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(32.dp))
-        
-        // Dummy Avatar
+
         Surface(
             modifier = Modifier.size(120.dp),
             shape = androidx.compose.foundation.shape.CircleShape,
@@ -46,13 +46,13 @@ fun ProfileScreen(
                 Text(userName.take(2).uppercase(), fontSize = 40.sp, fontWeight = FontWeight.Bold)
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(userName, fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Text("Joined: Oct 2023", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         if (isEditing) {
             OutlinedTextField(
                 value = editHeight,
@@ -116,17 +116,20 @@ fun ProfileScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     Switch(
                         checked = isDarkMode,
-                        onCheckedChange = { isDarkMode = it }
+                        // ✅ Now actually saves to DataStore and triggers theme change
+                        onCheckedChange = { viewModel.setDarkMode(it) }
                     )
                 }
             }
         }
-        
+
         Spacer(modifier = Modifier.weight(1f))
-        
+
         Button(
             onClick = onNavigateToHistory,
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
         ) {
             Text("VIEW WORKOUT HISTORY")
         }
