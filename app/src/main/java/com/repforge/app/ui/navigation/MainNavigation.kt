@@ -1,5 +1,7 @@
 package com.repforge.app.ui.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Analytics
@@ -11,23 +13,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.repforge.app.ui.analytics.AnalyticsScreen
 import com.repforge.app.ui.auth.AuthViewModel
 import com.repforge.app.ui.auth.LoginScreen
 import com.repforge.app.ui.auth.SignupScreen
+import com.repforge.app.ui.history.HistoryScreen
 import com.repforge.app.ui.home.DashboardScreen
 import com.repforge.app.ui.profile.ProfileScreen
 import com.repforge.app.ui.workout.WorkoutSessionScreen
-import com.repforge.app.ui.analytics.AnalyticsScreen
-import com.repforge.app.ui.history.HistoryScreen
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector?) {
     object Login : Screen("login", "Login", null)
@@ -40,8 +38,10 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
 }
 
 @Composable
-fun MainAppScreen(viewModel: AuthViewModel = viewModel()) {
-    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
+fun MainAppScreen(
+    authViewModel: AuthViewModel = viewModel() // ✅ accepts shared ViewModel from MainActivity
+) {
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
     if (isLoggedIn == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -111,7 +111,7 @@ fun MainAppScreen(viewModel: AuthViewModel = viewModel()) {
             }
             composable(Screen.Workout.route) {
                 WorkoutSessionScreen(
-                    onFinish = { 
+                    onFinish = {
                         navController.navigate(Screen.Home.route) {
                             popUpTo(Screen.Home.route) { inclusive = false }
                         }
@@ -128,7 +128,8 @@ fun MainAppScreen(viewModel: AuthViewModel = viewModel()) {
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0)
                         }
-                    }
+                    },
+                    viewModel = authViewModel // ✅ passes the shared instance so theme syncs
                 )
             }
             composable(Screen.History.route) {
