@@ -34,6 +34,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     val isDarkMode: StateFlow<Boolean> = prefs.isDarkModeFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
+    val joinDateMillis: StateFlow<Long> = prefs.joinDateMillisFlow // ✅ NEW
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), System.currentTimeMillis())
+
     fun login(
         email: String,
         pass: String,
@@ -41,20 +44,18 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
-            if (email.isBlank() || pass.isBlank()) {
-                onError("Email and password cannot be empty")
-                return@launch
+            when {
+                email.isBlank() || pass.isBlank() -> onError("Email and password cannot be empty")
+                pass.length < 6 -> onError("Password must be at least 6 characters")
+                else -> {
+                    prefs.saveUserSession(
+                        id = UUID.randomUUID().toString(),
+                        name = email.substringBefore("@"),
+                        email = email
+                    )
+                    onSuccess()
+                }
             }
-            if (pass.length < 6) {
-                onError("Password must be at least 6 characters")
-                return@launch
-            }
-            prefs.saveUserSession(
-                id = UUID.randomUUID().toString(),
-                name = email.substringBefore("@"),
-                email = email
-            )
-            onSuccess()
         }
     }
 
