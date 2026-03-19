@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -39,7 +40,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
 
 @Composable
 fun MainAppScreen(
-    authViewModel: AuthViewModel = viewModel() // ✅ accepts shared ViewModel from MainActivity
+    authViewModel: AuthViewModel = viewModel()
 ) {
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
 
@@ -69,16 +70,22 @@ fun MainAppScreen(
                 NavigationBar {
                     bottomNavItems.forEach { screen ->
                         NavigationBarItem(
-                            icon = { Icon(screen.icon!!, contentDescription = screen.title) },
+                            icon = {
+                                Icon(screen.icon!!, contentDescription = screen.title)
+                            },
                             label = { Text(screen.title) },
                             selected = currentRoute == screen.route,
                             onClick = {
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
+                                if (currentRoute != screen.route) {
+                                    navController.navigate(screen.route) {
+                                        // ✅ KEY FIX — go back to start instead of
+                                        // stacking screens, and save/restore state
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
                             }
                         )
@@ -89,24 +96,39 @@ fun MainAppScreen(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = if (isLoggedIn == true) Screen.Home.route else Screen.Login.route,
+            startDestination = if (isLoggedIn == true) Screen.Home.route
+            else Screen.Login.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Login.route) {
                 LoginScreen(
-                    onLoginSuccess = { navController.navigate(Screen.Home.route) },
-                    onNavigateToSignup = { navController.navigate(Screen.Signup.route) }
+                    onLoginSuccess = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToSignup = {
+                        navController.navigate(Screen.Signup.route)
+                    }
                 )
             }
             composable(Screen.Signup.route) {
                 SignupScreen(
-                    onSignupSuccess = { navController.navigate(Screen.Home.route) },
-                    onNavigateToLogin = { navController.navigate(Screen.Login.route) }
+                    onSignupSuccess = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToLogin = {
+                        navController.popBackStack()
+                    }
                 )
             }
             composable(Screen.Home.route) {
                 DashboardScreen(
-                    onStartWorkout = { navController.navigate(Screen.Workout.route) }
+                    onStartWorkout = {
+                        navController.navigate(Screen.Workout.route)
+                    }
                 )
             }
             composable(Screen.Workout.route) {
@@ -123,13 +145,15 @@ fun MainAppScreen(
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(
-                    onNavigateToHistory = { navController.navigate(Screen.History.route) },
+                    onNavigateToHistory = {
+                        navController.navigate(Screen.History.route)
+                    },
                     onLogout = {
                         navController.navigate(Screen.Login.route) {
-                            popUpTo(0)
+                            popUpTo(0) { inclusive = true }
                         }
                     },
-                    viewModel = authViewModel // ✅ passes the shared instance so theme syncs
+                    viewModel = authViewModel
                 )
             }
             composable(Screen.History.route) {
