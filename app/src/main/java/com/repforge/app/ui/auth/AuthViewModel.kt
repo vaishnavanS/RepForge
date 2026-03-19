@@ -45,7 +45,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
-            // ✅ Basic format checks first
+            // Format checks
             when {
                 email.isBlank() -> {
                     onError("Please enter your email")
@@ -65,18 +65,18 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
 
-            // ✅ Check if account exists with this email
+            // Check stored credentials
+            val isRegistered = prefs.isRegisteredFlow.first()
             val storedEmail = prefs.userEmailFlow.first()
             val storedPassword = prefs.userPasswordFlow.first()
-            val isRegistered = prefs.isRegisteredFlow.first()
 
             when {
                 !isRegistered -> {
                     onError("No account found. Please create an account first.")
                     return@launch
                 }
-                storedEmail.lowercase() != email.trim().lowercase() -> {
-                    onError("No account found with this email")
+                storedEmail.trim().lowercase() != email.trim().lowercase() -> {
+                    onError("No account found with this email.")
                     return@launch
                 }
                 storedPassword != pass -> {
@@ -84,7 +84,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                     return@launch
                 }
                 else -> {
-                    // ✅ Credentials match — log in
                     prefs.setLoggedIn(true)
                     onSuccess()
                 }
@@ -101,7 +100,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
-            // ✅ Validation
+            // Validation
             when {
                 name.isBlank() -> {
                     onError("Please enter your full name")
@@ -121,16 +120,18 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
 
-            // ✅ Check if account already exists
+            // Check if account already exists
             val isRegistered = prefs.isRegisteredFlow.first()
             val storedEmail = prefs.userEmailFlow.first()
 
-            if (isRegistered && storedEmail.lowercase() == email.trim().lowercase()) {
+            if (isRegistered &&
+                storedEmail.trim().lowercase() == email.trim().lowercase()
+            ) {
                 onError("An account with this email already exists. Please login.")
                 return@launch
             }
 
-            // ✅ Save full account with password
+            // Save account
             prefs.saveUserSession(
                 id = UUID.randomUUID().toString(),
                 name = name,
