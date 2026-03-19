@@ -18,7 +18,8 @@ class UserPreferences(private val context: Context) {
         val HEIGHT = stringPreferencesKey("height")
         val WEIGHT = stringPreferencesKey("weight")
         val FITNESS_GOAL = stringPreferencesKey("fitness_goal")
-        val IS_DARK_MODE = booleanPreferencesKey("is_dark_mode") // ✅ NEW
+        val IS_DARK_MODE = booleanPreferencesKey("is_dark_mode")
+        val JOIN_DATE_MILLIS = longPreferencesKey("join_date_millis") // ✅ NEW
     }
 
     val isLoggedInFlow: Flow<Boolean> = context.dataStore.data.map { it[IS_LOGGED_IN] ?: false }
@@ -27,7 +28,10 @@ class UserPreferences(private val context: Context) {
     val heightFlow: Flow<String> = context.dataStore.data.map { it[HEIGHT] ?: "" }
     val weightFlow: Flow<String> = context.dataStore.data.map { it[WEIGHT] ?: "" }
     val fitnessGoalFlow: Flow<String> = context.dataStore.data.map { it[FITNESS_GOAL] ?: "" }
-    val isDarkModeFlow: Flow<Boolean> = context.dataStore.data.map { it[IS_DARK_MODE] ?: true } // ✅ NEW
+    val isDarkModeFlow: Flow<Boolean> = context.dataStore.data.map { it[IS_DARK_MODE] ?: true }
+    val joinDateMillisFlow: Flow<Long> = context.dataStore.data.map { // ✅ NEW
+        it[JOIN_DATE_MILLIS] ?: System.currentTimeMillis()
+    }
 
     suspend fun saveUserSession(id: String, name: String, email: String) {
         context.dataStore.edit {
@@ -35,6 +39,10 @@ class UserPreferences(private val context: Context) {
             it[USER_ID] = id
             it[USER_NAME] = name
             it[USER_EMAIL] = email
+            // ✅ Only set join date if not already set
+            if (it[JOIN_DATE_MILLIS] == null) {
+                it[JOIN_DATE_MILLIS] = System.currentTimeMillis()
+            }
         }
     }
 
@@ -50,7 +58,7 @@ class UserPreferences(private val context: Context) {
         context.dataStore.edit { it[USER_NAME] = name }
     }
 
-    suspend fun setDarkMode(enabled: Boolean) { // ✅ NEW
+    suspend fun setDarkMode(enabled: Boolean) {
         context.dataStore.edit { it[IS_DARK_MODE] = enabled }
     }
 
