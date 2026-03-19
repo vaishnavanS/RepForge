@@ -34,7 +34,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     val isDarkMode: StateFlow<Boolean> = prefs.isDarkModeFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
-    // ✅ FIXED - matches what LoginScreen calls
     fun login(
         email: String,
         pass: String,
@@ -50,7 +49,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 onError("Password must be at least 6 characters")
                 return@launch
             }
-            // Save session with email as both id and name (no backend)
             prefs.saveUserSession(
                 id = UUID.randomUUID().toString(),
                 name = email.substringBefore("@"),
@@ -60,7 +58,6 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // ✅ FIXED - matches what SignupScreen calls
     fun signup(
         name: String,
         email: String,
@@ -88,26 +85,18 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun updateProfile(height: String, weight: String, goal: String) {
-        viewModelScope.launch {
-            prefs.updateProfile(height, weight, goal)
-        }
+        viewModelScope.launch { prefs.updateProfile(height, weight, goal) }
     }
 
     fun updateName(name: String) {
-        viewModelScope.launch {
-            prefs.updateName(name)
-        }
+        viewModelScope.launch { prefs.updateName(name) }
     }
 
     fun setDarkMode(enabled: Boolean) {
-        viewModelScope.launch {
-            prefs.setDarkMode(enabled)
-        }
+        viewModelScope.launch { prefs.setDarkMode(enabled) }
     }
 
     fun logout() {
-        viewModelScope.launch {
-            prefs.clearSession()
-        }
+        viewModelScope.launch { prefs.clearSession() }
     }
 }
