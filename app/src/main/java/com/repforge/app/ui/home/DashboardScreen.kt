@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,9 +38,9 @@ fun DashboardScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .padding(16.dp)
     ) {
-        // Header
+        // ── Header ──────────────────────────────────────────
         Text(
             text = "REPFORGE",
             fontSize = 28.sp,
@@ -58,44 +57,74 @@ fun DashboardScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Quote Card
+        // ── Streak-Based Motivation Card ─────────────────────
+        val motivationMessage = when {
+            state.currentStreak == 0 -> Triple(
+                "🚀", "Start Your Journey",
+                "Every champion was once a beginner. Today is day one."
+            )
+            state.currentStreak == 1 -> Triple(
+                "⚡", "You Showed Up!",
+                "The hardest part is starting. You did it. Keep going."
+            )
+            state.currentStreak in 2..4 -> Triple(
+                "🔥", "${state.currentStreak} Day Streak!",
+                "You're building momentum. Don't break the chain!"
+            )
+            state.currentStreak in 5..9 -> Triple(
+                "💪", "${state.currentStreak} Days Strong!",
+                "Consistency is your superpower. You're proving it daily."
+            )
+            state.currentStreak in 10..20 -> Triple(
+                "🏆", "${state.currentStreak} Day Warrior!",
+                "Most people quit by now. You're not most people."
+            )
+            else -> Triple(
+                "👑", "${state.currentStreak} Day Legend!",
+                "Absolute elite. Your discipline is your identity now."
+            )
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(20.dp))
                 .background(
-                    Brush.horizontalGradient(
+                    Brush.linearGradient(
                         listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
                         )
                     )
                 )
                 .padding(20.dp)
         ) {
-            Column {
-                Text(
-                    text = "💬  Daily Motivation",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    letterSpacing = 1.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "\"${state.quote}\"",
-                    fontSize = 16.sp,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    lineHeight = 24.sp
-                )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(motivationMessage.first, fontSize = 44.sp)
+                Column {
+                    Text(
+                        motivationMessage.second,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        motivationMessage.third,
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                        lineHeight = 18.sp
+                    )
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Stats Row
+        // ── Stats Row ────────────────────────────────────────
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -116,7 +145,7 @@ fun DashboardScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Next Workout Card
+        // ── Next Session ─────────────────────────────────────
         Text(
             text = "NEXT SESSION",
             fontSize = 11.sp,
@@ -165,7 +194,9 @@ fun DashboardScreen(
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+                )
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // Exercise chips
@@ -196,7 +227,9 @@ fun DashboardScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+                                .background(
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+                                )
                                 .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
                             Text(
@@ -232,7 +265,7 @@ fun DashboardScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Cardio Timer
+        // ── Cardio Timer ─────────────────────────────────────
         Text(
             text = "CARDIO TIMER",
             fontSize = 11.sp,
