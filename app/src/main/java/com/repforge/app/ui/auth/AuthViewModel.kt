@@ -4,75 +4,65 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.repforge.app.data.UserPreferences
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
-    private val userPreferences = UserPreferences(application)
+    private val prefs = UserPreferences(application)
 
-    val isLoggedIn: StateFlow<Boolean?> = userPreferences.isLoggedInFlow
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-        
-    val userName: StateFlow<String> = userPreferences.userNameFlow
-        .stateIn(viewModelScope, SharingStarted.Eagerly, "Guest")
-        
-    val height: StateFlow<String> = userPreferences.heightFlow
-        .stateIn(viewModelScope, SharingStarted.Eagerly, "")
+    val isLoggedIn: StateFlow<Boolean?> = prefs.isLoggedInFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
-    val weight: StateFlow<String> = userPreferences.weightFlow
-        .stateIn(viewModelScope, SharingStarted.Eagerly, "")
+    val userName: StateFlow<String> = prefs.userNameFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Guest")
 
-    val fitnessGoal: StateFlow<String> = userPreferences.fitnessGoalFlow
-        .stateIn(viewModelScope, SharingStarted.Eagerly, "")
+    val userEmail: StateFlow<String> = prefs.userEmailFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
 
-    fun login(email: String, pass: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        if (email.isBlank() || pass.isBlank()) {
-            onError("Email and password cannot be empty")
-            return
-        }
+    val height: StateFlow<String> = prefs.heightFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+
+    val weight: StateFlow<String> = prefs.weightFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+
+    val fitnessGoal: StateFlow<String> = prefs.fitnessGoalFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+
+    // ✅ NEW - Dark mode state
+    val isDarkMode: StateFlow<Boolean> = prefs.isDarkModeFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    fun login(id: String, name: String, email: String) {
         viewModelScope.launch {
-            val name = email.substringBefore("@").replaceFirstChar { it.uppercase() }
-            userPreferences.saveUserSession(id = "user_123", name = name, email = email)
-            onSuccess()
+            prefs.saveUserSession(id, name, email)
         }
     }
 
-    fun signup(name: String, email: String, pass: String, confirm: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        if (name.isBlank() || email.isBlank() || pass.isBlank()) {
-            onError("All fields are required")
-            return
-        }
-        if (pass != confirm) {
-            onError("Passwords do not match")
-            return
-        }
-        if (pass.length < 6) {
-            onError("Password must be at least 6 characters")
-            return
-        }
+    fun updateProfile(height: String, weight: String, goal: String) {
         viewModelScope.launch {
-            userPreferences.saveUserSession(id = "user_${System.currentTimeMillis()}", name = name, email = email)
-            onSuccess()
+            prefs.updateProfile(height, weight, goal)
         }
     }
-    
+
+    fun updateName(name: String) {
+        viewModelScope.launch {
+            prefs.updateName(name)
+        }
+    }
+
+    // ✅ NEW - Toggle and save dark mode
+    fun setDarkMode(enabled: Boolean) {
+        viewModelScope.launch {
+            prefs.setDarkMode(enabled)
+        }
+    }
+
     fun logout() {
         viewModelScope.launch {
-            userPreferences.clearSession()
-        }
-    }
-
-    fun updateProfile(newHeight: String, newWeight: String, newGoal: String) {
-        viewModelScope.launch {
-            userPreferences.updateProfile(height = newHeight, weight = newWeight, goal = newGoal)
-        }
-    }
-    
-    fun updateName(newName: String) {
-        viewModelScope.launch {
-            userPreferences.updateName(newName)
+            prefs.clearSession()
         }
     }
 }
