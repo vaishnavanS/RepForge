@@ -271,7 +271,6 @@ fun DashboardScreen(
                         else
                             MaterialTheme.colorScheme.primary
                     )
-                    // Progress bar
                     Spacer(modifier = Modifier.height(8.dp))
                     LinearProgressIndicator(
                         progress = { 1f - (state.cardioTimeRemaining / 1200f) },
