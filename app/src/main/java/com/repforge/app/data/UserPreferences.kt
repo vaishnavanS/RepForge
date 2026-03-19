@@ -18,58 +18,43 @@ class UserPreferences(private val context: Context) {
         val HEIGHT = stringPreferencesKey("height")
         val WEIGHT = stringPreferencesKey("weight")
         val FITNESS_GOAL = stringPreferencesKey("fitness_goal")
+        val IS_DARK_MODE = booleanPreferencesKey("is_dark_mode") // ✅ NEW
     }
 
-    val isLoggedInFlow: Flow<Boolean> = context.dataStore.data.map { preferences ->
-        preferences[IS_LOGGED_IN] ?: false
-    }
-
-    val userNameFlow: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[USER_NAME] ?: "Guest"
-    }
-
-    val userEmailFlow: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[USER_EMAIL] ?: ""
-    }
-
-    val heightFlow: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[HEIGHT] ?: ""
-    }
-
-    val weightFlow: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[WEIGHT] ?: ""
-    }
-
-    val fitnessGoalFlow: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[FITNESS_GOAL] ?: ""
-    }
+    val isLoggedInFlow: Flow<Boolean> = context.dataStore.data.map { it[IS_LOGGED_IN] ?: false }
+    val userNameFlow: Flow<String> = context.dataStore.data.map { it[USER_NAME] ?: "Guest" }
+    val userEmailFlow: Flow<String> = context.dataStore.data.map { it[USER_EMAIL] ?: "" }
+    val heightFlow: Flow<String> = context.dataStore.data.map { it[HEIGHT] ?: "" }
+    val weightFlow: Flow<String> = context.dataStore.data.map { it[WEIGHT] ?: "" }
+    val fitnessGoalFlow: Flow<String> = context.dataStore.data.map { it[FITNESS_GOAL] ?: "" }
+    val isDarkModeFlow: Flow<Boolean> = context.dataStore.data.map { it[IS_DARK_MODE] ?: true } // ✅ NEW
 
     suspend fun saveUserSession(id: String, name: String, email: String) {
-        context.dataStore.edit { preferences ->
-            preferences[IS_LOGGED_IN] = true
-            preferences[USER_ID] = id
-            preferences[USER_NAME] = name
-            preferences[USER_EMAIL] = email
+        context.dataStore.edit {
+            it[IS_LOGGED_IN] = true
+            it[USER_ID] = id
+            it[USER_NAME] = name
+            it[USER_EMAIL] = email
         }
     }
 
     suspend fun updateProfile(height: String, weight: String, goal: String) {
-        context.dataStore.edit { preferences ->
-            preferences[HEIGHT] = height
-            preferences[WEIGHT] = weight
-            preferences[FITNESS_GOAL] = goal
+        context.dataStore.edit {
+            it[HEIGHT] = height
+            it[WEIGHT] = weight
+            it[FITNESS_GOAL] = goal
         }
     }
 
     suspend fun updateName(name: String) {
-        context.dataStore.edit { preferences ->
-            preferences[USER_NAME] = name
-        }
+        context.dataStore.edit { it[USER_NAME] = name }
+    }
+
+    suspend fun setDarkMode(enabled: Boolean) { // ✅ NEW
+        context.dataStore.edit { it[IS_DARK_MODE] = enabled }
     }
 
     suspend fun clearSession() {
-        context.dataStore.edit { preferences ->
-            preferences.clear()
-        }
+        context.dataStore.edit { it.clear() }
     }
 }
