@@ -5,33 +5,44 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.TrendingDown
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
     val state by viewModel.state.collectAsState()
+    var dropdownExpanded by remember { mutableStateOf(false) }
+    val dateFormatter = remember { SimpleDateFormat("MMM dd", Locale.getDefault()) }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item {
+        // ── Header ───────────────────────────────────────
+        item(key = "header") {
             Text(
                 "ANALYTICS",
                 fontSize = 11.sp,
@@ -47,8 +58,8 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
             )
         }
 
-        // Weekly frequency card
-        item {
+        // ── Weekly Card ───────────────────────────────────
+        item(key = "weekly") {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -86,8 +97,8 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
             }
         }
 
-        // Progress chart
-        item {
+        // ── Progress Graph ────────────────────────────────
+        item(key = "graph") {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -96,82 +107,316 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                     .padding(20.dp)
             ) {
                 Column {
-                    Text(
-                        "WEIGHT PROGRESSION",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                        letterSpacing = 1.sp
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        "Recent lifts trend",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    // Graph header row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                "PROGRESS TRACKER",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                letterSpacing = 1.sp
+                            )
+                            Text(
+                                if (state.selectedExercise.isNotBlank())
+                                    state.selectedExercise
+                                else "Select Exercise",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
-                    if (state.recentProgress.isNotEmpty()) {
-                        val points = state.recentProgress.map { it.weightKg.toFloat() }
-                        val maxW = points.max().coerceAtLeast(1f)
-                        val minW = points.min()
-                        val range = (maxW - minW).coerceAtLeast(1f)
+                        // Trend badge
+                        if (state.trendUp != null) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(
+                                        if (state.trendUp)
+                                            Color(0xFF4CAF50).copy(alpha = 0.15f)
+                                        else
+                                            Color(0xFFF44336).copy(alpha = 0.15f)
+                                    )
+                                    .padding(horizontal = 10.dp, vertical = 6.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = if (state.trendUp)
+                                            Icons.Filled.TrendingUp
+                                        else
+                                            Icons.Filled.TrendingDown,
+                                        contentDescription = null,
+                                        tint = if (state.trendUp)
+                                            Color(0xFF4CAF50)
+                                        else
+                                            Color(0xFFF44336),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        if (state.trendUp) "Improving" else "Declining",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (state.trendUp)
+                                            Color(0xFF4CAF50)
+                                        else
+                                            Color(0xFFF44336)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // ── Exercise Dropdown ─────────────────
+                    if (state.allExerciseNames.isNotEmpty()) {
+                        ExposedDropdownMenuBox(
+                            expanded = dropdownExpanded,
+                            onExpandedChange = { dropdownExpanded = it }
+                        ) {
+                            OutlinedTextField(
+                                value = state.selectedExercise.ifBlank { "Select exercise..." },
+                                onValueChange = {},
+                                readOnly = true,
+                                trailingIcon = {
+                                    Icon(
+                                        Icons.Filled.ArrowDropDown,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .menuAnchor(),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                                ),
+                                textStyle = LocalTextStyle.current.copy(
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            )
+                            ExposedDropdownMenu(
+                                expanded = dropdownExpanded,
+                                onDismissRequest = { dropdownExpanded = false }
+                            ) {
+                                state.allExerciseNames.forEach { name ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                name,
+                                                fontSize = 14.sp,
+                                                fontWeight = if (name == state.selectedExercise)
+                                                    FontWeight.Bold else FontWeight.Normal,
+                                                color = if (name == state.selectedExercise)
+                                                    MaterialTheme.colorScheme.primary
+                                                else
+                                                    MaterialTheme.colorScheme.onSurface
+                                            )
+                                        },
+                                        onClick = {
+                                            viewModel.selectExercise(name)
+                                            dropdownExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
+                    // ── Chart ─────────────────────────────
+                    if (state.exerciseProgressPoints.size >= 2) {
+                        val points = state.exerciseProgressPoints
+                        val values = if (state.isBodyweight) {
+                            // For bodyweight track total reps per session
+                            points.map { p ->
+                                p.repsAchieved.split(",")
+                                    .mapNotNull { it.trim().toFloatOrNull() }
+                                    .sum()
+                            }
+                        } else {
+                            points.map { it.weightKg.toFloat() }
+                        }
+
+                        val maxVal = values.max().coerceAtLeast(1f)
+                        val minVal = values.min()
+                        val range = (maxVal - minVal).coerceAtLeast(1f)
+                        val maxIndex = values.indexOf(values.max())
                         val primaryColor = MaterialTheme.colorScheme.primary
 
-                        Canvas(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(160.dp)
-                        ) {
-                            val w = size.width
-                            val h = size.height
-                            val stepX = w / (points.size - 1).coerceAtLeast(1)
-
-                            repeat(4) { i ->
-                                val y = h * i / 3f
-                                drawLine(
-                                    color = Color.Gray.copy(alpha = 0.15f),
-                                    start = Offset(0f, y),
-                                    end = Offset(w, y),
-                                    strokeWidth = 1f
+                        // Y axis labels
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            // Y axis
+                            Column(
+                                modifier = Modifier
+                                    .width(40.dp)
+                                    .height(160.dp),
+                                verticalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    if (state.isBodyweight) "${maxVal.toInt()}"
+                                    else "${maxVal.toInt()}kg",
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                )
+                                Text(
+                                    if (state.isBodyweight)
+                                        "${((maxVal + minVal) / 2).toInt()}"
+                                    else "${((maxVal + minVal) / 2).toInt()}kg",
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                )
+                                Text(
+                                    if (state.isBodyweight) "${minVal.toInt()}"
+                                    else "${minVal.toInt()}kg",
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                                 )
                             }
 
-                            val path = Path()
-                            points.forEachIndexed { index, weight ->
-                                val x = index * stepX
-                                val y = h - ((weight - minW) / range * h * 0.85f) - h * 0.05f
-                                if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
-                            }
-                            drawPath(path, primaryColor, style = Stroke(width = 4f))
+                            Spacer(modifier = Modifier.width(4.dp))
 
-                            points.forEachIndexed { index, weight ->
-                                val x = index * stepX
-                                val y = h - ((weight - minW) / range * h * 0.85f) - h * 0.05f
-                                drawCircle(primaryColor, radius = 6f, center = Offset(x, y))
-                                drawCircle(Color.Black, radius = 3f, center = Offset(x, y))
+                            // Canvas
+                            Canvas(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(160.dp)
+                            ) {
+                                val w = size.width
+                                val h = size.height
+                                val stepX = w / (values.size - 1).coerceAtLeast(1)
+
+                                // Grid lines
+                                listOf(0f, 0.33f, 0.66f, 1f).forEach { frac ->
+                                    val y = h * frac
+                                    drawLine(
+                                        color = Color.Gray.copy(alpha = 0.12f),
+                                        start = Offset(0f, y),
+                                        end = Offset(w, y),
+                                        strokeWidth = 1f
+                                    )
+                                }
+
+                                // Filled area under line
+                                val fillPath = Path()
+                                values.forEachIndexed { index, value ->
+                                    val x = index * stepX
+                                    val y = h - ((value - minVal) / range * h * 0.85f) - h * 0.05f
+                                    if (index == 0) fillPath.moveTo(x, y) else fillPath.lineTo(x, y)
+                                }
+                                fillPath.lineTo((values.size - 1) * stepX, h)
+                                fillPath.lineTo(0f, h)
+                                fillPath.close()
+                                drawPath(
+                                    fillPath,
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(
+                                            primaryColor.copy(alpha = 0.25f),
+                                            primaryColor.copy(alpha = 0.02f)
+                                        ),
+                                        startY = 0f,
+                                        endY = h
+                                    ),
+                                    style = Fill
+                                )
+
+                                // Line
+                                val linePath = Path()
+                                values.forEachIndexed { index, value ->
+                                    val x = index * stepX
+                                    val y = h - ((value - minVal) / range * h * 0.85f) - h * 0.05f
+                                    if (index == 0) linePath.moveTo(x, y)
+                                    else linePath.lineTo(x, y)
+                                }
+                                drawPath(linePath, primaryColor, style = Stroke(width = 3f))
+
+                                // Dots — gold for PR, normal for rest
+                                values.forEachIndexed { index, value ->
+                                    val x = index * stepX
+                                    val y = h - ((value - minVal) / range * h * 0.85f) - h * 0.05f
+                                    val isPR = index == maxIndex
+                                    drawCircle(
+                                        color = if (isPR) Color(0xFFFFD700) else primaryColor,
+                                        radius = if (isPR) 10f else 6f,
+                                        center = Offset(x, y)
+                                    )
+                                    drawCircle(
+                                        color = Color.Black,
+                                        radius = if (isPR) 5f else 3f,
+                                        center = Offset(x, y)
+                                    )
+                                }
                             }
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
+
+                        // X axis dates
+                        val showDates = if (points.size <= 6) points
+                        else listOf(
+                            points.first(),
+                            points[points.size / 2],
+                            points.last()
+                        )
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 44.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                "Min: ${minW.toInt()} kg",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            showDates.forEach { p ->
+                                Text(
+                                    dateFormatter.format(Date(p.dateMillis)),
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Stats row below chart
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            MiniStatBox(
+                                modifier = Modifier.weight(1f),
+                                label = if (state.isBodyweight) "BEST REPS" else "BEST",
+                                value = if (state.isBodyweight)
+                                    "${values.max().toInt()} reps"
+                                else
+                                    "${maxVal.toInt()} kg",
+                                color = Color(0xFFFFD700)
                             )
-                            Text(
-                                "Max: ${maxW.toInt()} kg",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
+                            MiniStatBox(
+                                modifier = Modifier.weight(1f),
+                                label = "SESSIONS",
+                                value = "${points.size}",
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            MiniStatBox(
+                                modifier = Modifier.weight(1f),
+                                label = if (state.isBodyweight) "FIRST REPS" else "STARTED",
+                                value = if (state.isBodyweight)
+                                    "${values.first().toInt()} reps"
+                                else
+                                    "${minVal.toInt()} kg",
+                                color = MaterialTheme.colorScheme.secondary
                             )
                         }
-                    } else {
+
+                    } else if (state.selectedExercise.isNotBlank()) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -182,7 +427,26 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                                 Text("📈", fontSize = 40.sp)
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    "Complete a workout to see your progress",
+                                    "Log at least 2 sessions of\n${state.selectedExercise}\nto see the graph",
+                                    fontSize = 13.sp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                                    textAlign = TextAlign.Center,
+                                    lineHeight = 20.sp
+                                )
+                            }
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text("🏋️", fontSize = 40.sp)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "Complete a workout to see progress",
                                     fontSize = 13.sp,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
                                 )
@@ -193,8 +457,8 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
             }
         }
 
-        // Personal Records header
-        item {
+        // ── Personal Records ──────────────────────────────
+        item(key = "pr_header") {
             Text(
                 "TOP PERSONAL RECORDS",
                 fontSize = 11.sp,
@@ -204,9 +468,11 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
             )
         }
 
-        // ✅ FIXED - itemsIndexed inside LazyListScope
         if (state.personalRecords.isNotEmpty()) {
-            itemsIndexed(state.personalRecords) { index, pr ->
+            itemsIndexed(
+                items = state.personalRecords,
+                key = { _, pr -> pr.exercise }
+            ) { index, pr ->
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -229,7 +495,9 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                                             0 -> Color(0xFFFFD700).copy(alpha = 0.2f)
                                             1 -> Color(0xFFC0C0C0).copy(alpha = 0.2f)
                                             2 -> Color(0xFFCD7F32).copy(alpha = 0.2f)
-                                            else -> MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                            else -> MaterialTheme.colorScheme.primary.copy(
+                                                alpha = 0.1f
+                                            )
                                         }
                                     ),
                                 contentAlignment = Alignment.Center
@@ -260,7 +528,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                 }
             }
         } else {
-            item {
+            item(key = "no_pr") {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -282,6 +550,39 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
             }
         }
 
-        item { Spacer(modifier = Modifier.height(16.dp)) }
+        item(key = "bottom_space") { Spacer(modifier = Modifier.height(16.dp)) }
+    }
+}
+
+@Composable
+fun MiniStatBox(
+    modifier: Modifier = Modifier,
+    label: String,
+    value: String,
+    color: Color
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(color.copy(alpha = 0.1f))
+            .padding(10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                label,
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Bold,
+                color = color,
+                letterSpacing = 1.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                value,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = color
+            )
+        }
     }
 }
