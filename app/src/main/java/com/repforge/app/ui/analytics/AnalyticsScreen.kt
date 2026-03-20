@@ -41,7 +41,6 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // ── Header ───────────────────────────────────────
         item(key = "header") {
             Text(
                 "ANALYTICS",
@@ -58,7 +57,6 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
             )
         }
 
-        // ── Weekly Card ───────────────────────────────────
         item(key = "weekly") {
             Box(
                 modifier = Modifier
@@ -97,7 +95,6 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
             }
         }
 
-        // ── Progress Graph ────────────────────────────────
         item(key = "graph") {
             Box(
                 modifier = Modifier
@@ -107,7 +104,8 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                     .padding(20.dp)
             ) {
                 Column {
-                    // Graph header row
+                    // ── Graph header ────────────────────────
+                    val trendUp = state.trendUp
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -132,40 +130,34 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                         }
 
                         // Trend badge
-                        if (state.trendUp != null) {
+                        if (trendUp != null) {
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(
-                                        if (state.trendUp)
-                                            Color(0xFF4CAF50).copy(alpha = 0.15f)
-                                        else
-                                            Color(0xFFF44336).copy(alpha = 0.15f)
+                                        if (trendUp) Color(0xFF4CAF50).copy(alpha = 0.15f)
+                                        else Color(0xFFF44336).copy(alpha = 0.15f)
                                     )
                                     .padding(horizontal = 10.dp, vertical = 6.dp)
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
-                                        imageVector = if (state.trendUp)
+                                        imageVector = if (trendUp)
                                             Icons.Filled.TrendingUp
                                         else
                                             Icons.Filled.TrendingDown,
                                         contentDescription = null,
-                                        tint = if (state.trendUp)
-                                            Color(0xFF4CAF50)
-                                        else
-                                            Color(0xFFF44336),
+                                        tint = if (trendUp) Color(0xFF4CAF50)
+                                        else Color(0xFFF44336),
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
-                                        if (state.trendUp) "Improving" else "Declining",
+                                        if (trendUp) "Improving" else "Declining",
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (state.trendUp)
-                                            Color(0xFF4CAF50)
-                                        else
-                                            Color(0xFFF44336)
+                                        color = if (trendUp) Color(0xFF4CAF50)
+                                        else Color(0xFFF44336)
                                     )
                                 }
                             }
@@ -174,7 +166,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // ── Exercise Dropdown ─────────────────
+                    // ── Exercise Dropdown ────────────────────
                     if (state.allExerciseNames.isNotEmpty()) {
                         ExposedDropdownMenuBox(
                             expanded = dropdownExpanded,
@@ -197,7 +189,9 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                                 shape = RoundedCornerShape(12.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(
+                                        alpha = 0.2f
+                                    )
                                 ),
                                 textStyle = LocalTextStyle.current.copy(
                                     fontSize = 14.sp,
@@ -218,8 +212,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                                                     FontWeight.Bold else FontWeight.Normal,
                                                 color = if (name == state.selectedExercise)
                                                     MaterialTheme.colorScheme.primary
-                                                else
-                                                    MaterialTheme.colorScheme.onSurface
+                                                else MaterialTheme.colorScheme.onSurface
                                             )
                                         },
                                         onClick = {
@@ -230,15 +223,13 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                                 }
                             }
                         }
-
                         Spacer(modifier = Modifier.height(16.dp))
                     }
 
-                    // ── Chart ─────────────────────────────
+                    // ── Chart ────────────────────────────────
                     if (state.exerciseProgressPoints.size >= 2) {
                         val points = state.exerciseProgressPoints
                         val values = if (state.isBodyweight) {
-                            // For bodyweight track total reps per session
                             points.map { p ->
                                 p.repsAchieved.split(",")
                                     .mapNotNull { it.trim().toFloatOrNull() }
@@ -254,9 +245,8 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                         val maxIndex = values.indexOf(values.max())
                         val primaryColor = MaterialTheme.colorScheme.primary
 
-                        // Y axis labels
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            // Y axis
+                            // Y axis labels
                             Column(
                                 modifier = Modifier
                                     .width(40.dp)
@@ -286,7 +276,6 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
 
                             Spacer(modifier = Modifier.width(4.dp))
 
-                            // Canvas
                             Canvas(
                                 modifier = Modifier
                                     .weight(1f)
@@ -298,21 +287,21 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
 
                                 // Grid lines
                                 listOf(0f, 0.33f, 0.66f, 1f).forEach { frac ->
-                                    val y = h * frac
                                     drawLine(
                                         color = Color.Gray.copy(alpha = 0.12f),
-                                        start = Offset(0f, y),
-                                        end = Offset(w, y),
+                                        start = Offset(0f, h * frac),
+                                        end = Offset(w, h * frac),
                                         strokeWidth = 1f
                                     )
                                 }
 
-                                // Filled area under line
+                                // Fill under line
                                 val fillPath = Path()
                                 values.forEachIndexed { index, value ->
                                     val x = index * stepX
                                     val y = h - ((value - minVal) / range * h * 0.85f) - h * 0.05f
-                                    if (index == 0) fillPath.moveTo(x, y) else fillPath.lineTo(x, y)
+                                    if (index == 0) fillPath.moveTo(x, y)
+                                    else fillPath.lineTo(x, y)
                                 }
                                 fillPath.lineTo((values.size - 1) * stepX, h)
                                 fillPath.lineTo(0f, h)
@@ -340,7 +329,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                                 }
                                 drawPath(linePath, primaryColor, style = Stroke(width = 3f))
 
-                                // Dots — gold for PR, normal for rest
+                                // Dots — gold for PR
                                 values.forEachIndexed { index, value ->
                                     val x = index * stepX
                                     val y = h - ((value - minVal) / range * h * 0.85f) - h * 0.05f
@@ -363,11 +352,8 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
 
                         // X axis dates
                         val showDates = if (points.size <= 6) points
-                        else listOf(
-                            points.first(),
-                            points[points.size / 2],
-                            points.last()
-                        )
+                        else listOf(points.first(), points[points.size / 2], points.last())
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -385,7 +371,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
 
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        // Stats row below chart
+                        // Stats row
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -395,8 +381,7 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                                 label = if (state.isBodyweight) "BEST REPS" else "BEST",
                                 value = if (state.isBodyweight)
                                     "${values.max().toInt()} reps"
-                                else
-                                    "${maxVal.toInt()} kg",
+                                else "${maxVal.toInt()} kg",
                                 color = Color(0xFFFFD700)
                             )
                             MiniStatBox(
@@ -407,11 +392,10 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
                             )
                             MiniStatBox(
                                 modifier = Modifier.weight(1f),
-                                label = if (state.isBodyweight) "FIRST REPS" else "STARTED",
+                                label = if (state.isBodyweight) "FIRST REPS" else "STARTED AT",
                                 value = if (state.isBodyweight)
                                     "${values.first().toInt()} reps"
-                                else
-                                    "${minVal.toInt()} kg",
+                                else "${minVal.toInt()} kg",
                                 color = MaterialTheme.colorScheme.secondary
                             )
                         }
@@ -457,7 +441,6 @@ fun AnalyticsScreen(viewModel: AnalyticsViewModel = viewModel()) {
             }
         }
 
-        // ── Personal Records ──────────────────────────────
         item(key = "pr_header") {
             Text(
                 "TOP PERSONAL RECORDS",
