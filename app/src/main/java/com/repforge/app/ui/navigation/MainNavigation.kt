@@ -20,13 +20,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.repforge.app.ui.analytics.AnalyticsScreen
+import com.repforge.app.ui.analytics.AnalyticsViewModel
 import com.repforge.app.ui.auth.AuthViewModel
 import com.repforge.app.ui.auth.LoginScreen
 import com.repforge.app.ui.auth.SignupScreen
 import com.repforge.app.ui.history.HistoryScreen
 import com.repforge.app.ui.home.DashboardScreen
+import com.repforge.app.ui.home.DashboardViewModel
 import com.repforge.app.ui.profile.ProfileScreen
 import com.repforge.app.ui.workout.WorkoutSessionScreen
+import com.repforge.app.ui.workout.WorkoutViewModel
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector?) {
     object Login : Screen("login", "Login", null)
@@ -50,6 +53,11 @@ fun MainAppScreen(
         }
         return
     }
+
+    // ✅ Hoist all ViewModels here so they are NEVER recreated on tab switch
+    val dashboardViewModel: DashboardViewModel = viewModel()
+    val workoutViewModel: WorkoutViewModel = viewModel()
+    val analyticsViewModel: AnalyticsViewModel = viewModel()
 
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -76,10 +84,9 @@ fun MainAppScreen(
                             label = { Text(screen.title) },
                             selected = currentRoute == screen.route,
                             onClick = {
+                                // ✅ Don't navigate if already on this tab
                                 if (currentRoute != screen.route) {
                                     navController.navigate(screen.route) {
-                                        // ✅ KEY FIX — go back to start instead of
-                                        // stacking screens, and save/restore state
                                         popUpTo(navController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
@@ -125,23 +132,28 @@ fun MainAppScreen(
                 )
             }
             composable(Screen.Home.route) {
+                // ✅ Pass hoisted ViewModel — never recreated
                 DashboardScreen(
                     onStartWorkout = {
                         navController.navigate(Screen.Workout.route)
-                    }
+                    },
+                    viewModel = dashboardViewModel
                 )
             }
             composable(Screen.Workout.route) {
+                // ✅ Pass hoisted ViewModel — never recreated
                 WorkoutSessionScreen(
                     onFinish = {
                         navController.navigate(Screen.Home.route) {
                             popUpTo(Screen.Home.route) { inclusive = false }
                         }
-                    }
+                    },
+                    viewModel = workoutViewModel
                 )
             }
             composable(Screen.Analytics.route) {
-                AnalyticsScreen()
+                // ✅ Pass hoisted ViewModel — never recreated
+                AnalyticsScreen(viewModel = analyticsViewModel)
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(
