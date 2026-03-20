@@ -11,7 +11,6 @@ import com.repforge.app.repository.WorkoutRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 data class SetState(
     val weight: String = "",
@@ -22,11 +21,19 @@ data class SetState(
 data class ExerciseState(
     val exerciseName: String,
     val sets: List<SetState> = listOf(SetState(), SetState(), SetState()),
-    val prevPerformanceWeight: String = "No History"
+    val prevPerformanceWeight: String = "No History",
+    val isBodyweight: Boolean = false // ✅ NEW
 )
 
 class WorkoutViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = WorkoutRepository(AppDatabase.getDatabase(application).workoutDao())
+
+    // ✅ Bodyweight exercises — no weight field shown
+    private val bodyweightExercises = setOf(
+        "Pull Ups", "Hanging Leg Raises", "Ab Wheel Rollout",
+        "Leg Raises", "Hollow Body Hold", "Plank", "Russian Twists",
+        "Decline Sit Ups", "Cable Woodchop", "Face Pulls"
+    )
 
     private val _currentDay = MutableStateFlow<WorkoutDay?>(null)
     val currentDay: StateFlow<WorkoutDay?> = _currentDay
@@ -34,15 +41,12 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     private val _exercises = MutableStateFlow<List<ExerciseState>>(emptyList())
     val exercises: StateFlow<List<ExerciseState>> = _exercises
 
-    // ✅ Selected date — defaults to today
     private val _selectedDateMillis = MutableStateFlow(System.currentTimeMillis())
     val selectedDateMillis: StateFlow<Long> = _selectedDateMillis
 
-    // ✅ Selected workout day index (0-5 for 6-day split)
     private val _selectedDayIndex = MutableStateFlow(0)
     val selectedDayIndex: StateFlow<Int> = _selectedDayIndex
 
-    // ✅ All 6 days for the selector
     val allWorkoutDays = PplEngine.sixDaySplit
 
     init {
@@ -59,17 +63,12 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    // ✅ Called when user picks a different workout day
     fun selectWorkoutDay(index: Int) {
         _selectedDayIndex.value = index
         val day = PplEngine.sixDaySplit[index]
-        _currentDay.value = day
-        viewModelScope.launch {
-            loadExercisesForDay(day)
-        }
+        viewModelScope.launch { loadExercisesForDay(day) }
     }
 
-    // ✅ Called when user picks a date
     fun selectDate(millis: Long) {
         _selectedDateMillis.value = millis
     }
@@ -77,14 +76,24 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     private suspend fun loadExercisesForDay(day: WorkoutDay) {
         _currentDay.value = day
         val states = day.exercises.map { exName ->
+            val isBW = bodyweightExercises.contains(exName)
             val prev = repository.getLastPerformance(exName)
             val suggestedW = repository.getSuggestedWeight(exName)
-            val weightStr = when {
+
+            // ✅ For bodyweight, show rep history instead of weight
+            val hintStr = when {
+                isBW -> if (prev != null) "Last: ${prev.repsAchieved} reps"
+                else "Bodyweight"
                 suggestedW != null -> "Suggested: $suggestedW kg"
                 prev != null -> "Last: ${prev.weightKg} kg"
                 else -> "No History"
             }
-            ExerciseState(exerciseName = exName, prevPerformanceWeight = weightStr)
+
+            ExerciseState(
+                exerciseName = exName,
+                prevPerformanceWeight = hintStr,
+                isBodyweight = isBW
+            )
         }
         _exercises.value = states
     }
@@ -119,14 +128,22 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     fun finishWorkout(onComplete: () -> Unit) {
         val day = _currentDay.value ?: return
         viewModelScope.launch {
-            // ✅ Use selected date instead of current time
             val dateMillis = _selectedDateMillis.value
             _exercises.value.forEach { ex ->
                 val completedSets = ex.sets.filter { it.isCompleted }
                 if (completedSets.isNotEmpty()) {
-                    val repsAchieved = completedSets.joinToString(",") { it.reps.ifBlank { "0" } }
-                    val maxWeight = completedSets.maxOfOrNull { it.weight.toDoubleOrNull() ?: 0.0 } ?: 0.0
-                    val allHit = completedSets.all { (it.reps.toIntOrNull() ?: 0) >= 8 }
+                    val repsAchieved = completedSets.joinToString(",") {
+                        it.reps.ifBlank { "0" }
+                    }
+                    // ✅ Bodyweight exercises save 0 for weight
+                    val maxWeight = if (ex.isBodyweight) 0.0
+                    else completedSets.maxOfOrNull {
+                        it.weight.toDoubleOrNull() ?: 0.0
+                    } ?: 0.0
+
+                    val allHit = completedSets.all {
+                        (it.reps.toIntOrNull() ?: 0) >= 8
+                    }
                     repository.insertExerciseLog(
                         ExerciseLog(
                             dateMillis = dateMillis,
