@@ -1,5 +1,7 @@
 package com.repforge.app.ui.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -54,7 +56,7 @@ fun MainAppScreen(
         return
     }
 
-    // ✅ Hoist all ViewModels here so they are NEVER recreated on tab switch
+    // ✅ All ViewModels hoisted here — never recreated on tab switch
     val dashboardViewModel: DashboardViewModel = viewModel()
     val workoutViewModel: WorkoutViewModel = viewModel()
     val analyticsViewModel: AnalyticsViewModel = viewModel()
@@ -105,7 +107,12 @@ fun MainAppScreen(
             navController = navController,
             startDestination = if (isLoggedIn == true) Screen.Home.route
             else Screen.Login.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            // ✅ Remove all animations — instant switching, no lag
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None }
         ) {
             composable(Screen.Login.route) {
                 LoginScreen(
@@ -132,7 +139,7 @@ fun MainAppScreen(
                 )
             }
             composable(Screen.Home.route) {
-                // ✅ Pass hoisted ViewModel — never recreated
+                // ✅ Hoisted ViewModel passed — no recreation
                 DashboardScreen(
                     onStartWorkout = {
                         navController.navigate(Screen.Workout.route)
@@ -141,7 +148,7 @@ fun MainAppScreen(
                 )
             }
             composable(Screen.Workout.route) {
-                // ✅ Pass hoisted ViewModel — never recreated
+                // ✅ Hoisted ViewModel passed — no recreation
                 WorkoutSessionScreen(
                     onFinish = {
                         navController.navigate(Screen.Home.route) {
@@ -152,7 +159,7 @@ fun MainAppScreen(
                 )
             }
             composable(Screen.Analytics.route) {
-                // ✅ Pass hoisted ViewModel — never recreated
+                // ✅ Hoisted ViewModel passed — no recreation
                 AnalyticsScreen(viewModel = analyticsViewModel)
             }
             composable(Screen.Profile.route) {
