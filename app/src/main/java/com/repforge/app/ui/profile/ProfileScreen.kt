@@ -68,7 +68,7 @@ fun ProfileScreen(
             letterSpacing = 3.sp
         )
         Text(
-            "Your Account",
+            "Your Space",
             fontSize = 26.sp,
             fontWeight = FontWeight.ExtraBold,
             color = MaterialTheme.colorScheme.onBackground
@@ -278,7 +278,7 @@ fun ProfileScreen(
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        if (isDarkMode) "🌙  Dark (Neon)" else "☀️  Light (Navy)",
+                        if (isDarkMode) "🌙 🌌 Dark (Neon)" else "☀️  Light (Navy)",
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
