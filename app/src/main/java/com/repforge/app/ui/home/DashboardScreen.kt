@@ -1,24 +1,40 @@
 package com.repforge.app.ui.home
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-<<<<<<< HEAD
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-=======
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.font.FontStyle
->>>>>>> 72daa16 (Modified for better version)
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,107 +55,14 @@ fun DashboardScreen(
         }
     }
 
-<<<<<<< HEAD
-    // ✅ LazyColumn instead of Column+verticalScroll — much smoother
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 32.dp)
-    ) {
-
-        // ── Header ──────────────────────────────────────
-        item(key = "header") {
-            Column {
-                Text(
-                    text = "REPFORGE",
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Black,
-                    color = MaterialTheme.colorScheme.primary,
-                    letterSpacing = 4.sp
-                )
-                Text(
-                    text = "Intelligent Strength Assistant",
-                    fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                    letterSpacing = 1.sp
-                )
-            }
-        }
-
-        // ── Streak Motivation Card ───────────────────────
-        item(key = "motivation") {
-            val motivationMessage = when {
-                state.currentStreak == 0 -> Triple(
-                    "🚀", "Start Your Journey",
-                    "Every champion was once a beginner. Today is day one."
-                )
-                state.currentStreak == 1 -> Triple(
-                    "⚡", "You Showed Up!",
-                    "The hardest part is starting. You did it. Keep going."
-                )
-                state.currentStreak in 2..4 -> Triple(
-                    "🔥", "${state.currentStreak} Day Streak!",
-                    "You're building momentum. Don't break the chain!"
-                )
-                state.currentStreak in 5..9 -> Triple(
-                    "💪", "${state.currentStreak} Days Strong!",
-                    "Consistency is your superpower. You're proving it daily."
-                )
-                state.currentStreak in 10..20 -> Triple(
-                    "🏆", "${state.currentStreak} Day Warrior!",
-                    "Most people quit by now. You're not most people."
-                )
-                else -> Triple(
-                    "👑", "${state.currentStreak} Day Legend!",
-                    "Absolute elite. Your discipline is your identity now."
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
-                            )
-                        )
-                    )
-                    .padding(20.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Text(motivationMessage.first, fontSize = 44.sp)
-                    Column {
-                        Text(
-                            motivationMessage.second,
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            motivationMessage.third,
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                            lineHeight = 18.sp
-                        )
-                    }
-=======
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
+                Brush.verticalGradient(
+                    listOf(
                         MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.surface
+                        MaterialTheme.colorScheme.surface.copy(alpha = 0.98f)
                     )
                 )
             )
@@ -147,8 +70,9 @@ fun DashboardScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -158,9 +82,10 @@ fun DashboardScreen(
                 Column {
                     Text(
                         text = "REPFORGE",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Black,
+                        color = MaterialTheme.colorScheme.primary,
+                        letterSpacing = 3.sp
                     )
                     Text(
                         text = "Neural training cockpit",
@@ -170,7 +95,7 @@ fun DashboardScreen(
                 }
                 Surface(
                     shape = RoundedCornerShape(50),
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
                     contentColor = MaterialTheme.colorScheme.primary
                 ) {
                     Text(
@@ -179,368 +104,150 @@ fun DashboardScreen(
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
->>>>>>> 72daa16 (Modified for better version)
                 }
             }
-
-<<<<<<< HEAD
-        // ── Stats Row ────────────────────────────────────
-        item(key = "stats") {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                StatCard(
-                    modifier = Modifier.weight(1f),
-                    label = "Total Sessions",
-                    value = "${state.totalWorkouts}",
-                    icon = "🏋️"
-                )
-                StatCard(
-                    modifier = Modifier.weight(1f),
-                    label = "Streak",
-                    value = "${state.currentStreak} days",
-                    icon = "🔥"
-                )
-            }
-        }
-
-        // ── Next Session ─────────────────────────────────
-        item(key = "next_session_label") {
-            Text(
-                text = "NEXT SESSION",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                letterSpacing = 2.sp
-            )
-        }
-
-        item(key = "next_session_card") {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column {
-                            Text(
-                                text = "Day ${state.nextWorkout.dayIndex}",
-                                fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.sp
-                            )
-                            Text(
-                                text = state.nextWorkout.title,
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("💪", fontSize = 24.sp)
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Exercise chips
-                    val exercises = state.nextWorkout.exercises
-                    val preview = exercises.take(4)
-                    val remaining = exercises.size - preview.size
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        preview.forEach { ex ->
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(
-                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                                    )
-                                    .padding(horizontal = 10.dp, vertical = 4.dp)
-                            ) {
-                                Text(
-                                    text = ex.split(" ").first(),
-                                    fontSize = 11.sp,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
-                        }
-                        if (remaining > 0) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(
-                                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
-                                    )
-                                    .padding(horizontal = 10.dp, vertical = 4.dp)
-                            ) {
-                                Text(
-                                    text = "+$remaining more",
-                                    fontSize = 11.sp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                                )
-                            }
-                        }
-                    }
-=======
-            Spacer(modifier = Modifier.height(16.dp))
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f)),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f))
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(
-                            brush = Brush.linearGradient(
+                            Brush.linearGradient(
                                 listOf(
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
-                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.10f)
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.22f),
+                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.16f)
                                 )
                             )
                         )
-                        .padding(16.dp)
-                ) {
-                    Text(
-                        text = "\"${state.quote}\"",
-                        fontStyle = FontStyle.Italic,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                FuturisticMetricCard(
-                    title = "Total Sessions",
-                    value = "${state.totalWorkouts}",
-                    modifier = Modifier.weight(1f).padding(end = 8.dp)
-                )
-                FuturisticMetricCard(
-                    title = "Current Streak",
-                    value = "${state.currentStreak} days",
-                    modifier = Modifier.weight(1f).padding(start = 8.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Next Battle",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.25f))
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Day ${state.nextWorkout.dayIndex}: ${state.nextWorkout.title}",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = state.nextWorkout.exercises.joinToString(" • "))
->>>>>>> 72daa16 (Modified for better version)
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Button(
-                        onClick = onStartWorkout,
-<<<<<<< HEAD
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Text(
-                            "START SESSION",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            letterSpacing = 2.sp
-                        )
-                    }
-                }
-            }
-        }
-
-        // ── Cardio Timer Label ───────────────────────────
-        item(key = "cardio_label") {
-            Text(
-                text = "CARDIO TIMER",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                letterSpacing = 2.sp
-            )
-        }
-
-        // ── Cardio Timer Card ────────────────────────────
-        item(key = "cardio_card") {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(20.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(20.dp)
                 ) {
                     Column {
                         Text(
-                            text = "20-Min Cardio",
-                            fontSize = 13.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                        Text(
-                            text = "${state.cardioTimeRemaining / 60}:${
-                                String.format("%02d", state.cardioTimeRemaining % 60)
-                            }",
-                            fontSize = 40.sp,
-                            fontWeight = FontWeight.Black,
-                            color = if (state.cardioTimeRemaining == 0)
-                                MaterialTheme.colorScheme.secondary
-                            else
-                                MaterialTheme.colorScheme.primary
+                            text = "Today’s focus",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary,
+                            letterSpacing = 1.5.sp
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        LinearProgressIndicator(
-                            progress = { 1f - (state.cardioTimeRemaining / 1200f) },
-                            modifier = Modifier
-                                .width(180.dp)
-                                .height(4.dp)
-                                .clip(RoundedCornerShape(2.dp)),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+                        Text(
+                            text = state.nextWorkout.title,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .size(60.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(
-                                if (state.cardioTimeRemaining == 0)
-                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f)
-                                else
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(
-                            onClick = { viewModel.toggleCardio() },
-                            enabled = state.cardioTimeRemaining > 0
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "Day ${state.nextWorkout.dayIndex} • ${state.nextWorkout.focus}",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.74f)
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Button(
+                            onClick = onStartWorkout,
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
-                            Icon(
-                                imageVector = if (state.isCardioRunning) Icons.Filled.Stop
-                                else Icons.Filled.PlayArrow,
-                                contentDescription = "Toggle Cardio",
-                                tint = if (state.cardioTimeRemaining == 0)
-                                    MaterialTheme.colorScheme.secondary
-                                else
-                                    MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(32.dp)
-                            )
+                            Icon(Icons.Default.PlayArrow, contentDescription = null)
+                            Spacer(modifier = Modifier.size(8.dp))
+                            Text("Start session")
                         }
-=======
-                        modifier = Modifier.fillMaxWidth().height(48.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text("START SESSION")
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Daily 20-Min Cardio",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.Start)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                DashboardStatCard(
+                    label = "Sessions",
+                    value = state.totalWorkouts.toString(),
+                    accent = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f)
+                )
+                DashboardStatCard(
+                    label = "Streak",
+                    value = "${state.currentStreak}d",
+                    accent = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.25f))
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.18f))
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
+                Column(modifier = Modifier.padding(18.dp)) {
                     Text(
-                        text = "${state.cardioTimeRemaining / 60}:${String.format("%02d", state.cardioTimeRemaining % 60)}",
-                        fontSize = 32.sp,
+                        text = "Cardio burst",
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = if (state.isCardioRunning) "Timer active" else "20-minute reset loop",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "${state.cardioTimeRemaining / 60}:${String.format("%02d", state.cardioTimeRemaining % 60)}",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Black,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        OutlinedButton(
+                            onClick = { viewModel.toggleCardio() },
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Icon(if (state.isCardioRunning) Icons.Default.Stop else Icons.Default.PlayArrow, contentDescription = null)
+                            Spacer(modifier = Modifier.size(6.dp))
+                            Text(if (state.isCardioRunning) "Stop" else "Start")
+                        }
+                    }
+                }
+            }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.18f))
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Text(
+                        text = "Momentum",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = state.quote,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.74f)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Last session: ${state.lastWorkoutTitle}",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.primary
                     )
-
-                    Button(
-                        onClick = { viewModel.toggleCardio() },
-                        enabled = state.cardioTimeRemaining > 0,
-                        shape = RoundedCornerShape(16.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary,
-                            contentColor = MaterialTheme.colorScheme.onSecondary
-                        )
-                    ) {
-                        Text(if (state.cardioTimeRemaining == 0) "DONE" else if (state.isCardioRunning) "PAUSE" else "START")
->>>>>>> 72daa16 (Modified for better version)
-                    }
                 }
             }
         }
@@ -548,49 +255,22 @@ fun DashboardScreen(
 }
 
 @Composable
-<<<<<<< HEAD
-fun StatCard(
-    modifier: Modifier = Modifier,
+private fun DashboardStatCard(
     label: String,
     value: String,
-    icon: String
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
-    ) {
-        Column {
-            Text(icon, fontSize = 24.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = value,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = label,
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-            )
-=======
-private fun FuturisticMetricCard(
-    title: String,
-    value: String,
+    accent: Color,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f)),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f))
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, accent.copy(alpha = 0.25f))
     ) {
-        Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(title, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
-            Text(value, fontSize = 20.sp, fontWeight = FontWeight.Bold)
->>>>>>> 72daa16 (Modified for better version)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = label, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.62f))
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(text = value, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = accent)
         }
     }
 }

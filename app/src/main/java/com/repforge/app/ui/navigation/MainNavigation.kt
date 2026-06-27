@@ -10,16 +10,23 @@ import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-<<<<<<< HEAD
 import androidx.navigation.NavGraph.Companion.findStartDestination
-=======
->>>>>>> 72daa16 (Modified for better version)
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -59,7 +66,6 @@ fun MainAppScreen(
         return
     }
 
-    // ✅ All ViewModels hoisted here — never recreated on tab switch
     val dashboardViewModel: DashboardViewModel = viewModel()
     val workoutViewModel: WorkoutViewModel = viewModel()
     val analyticsViewModel: AnalyticsViewModel = viewModel()
@@ -68,13 +74,7 @@ fun MainAppScreen(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val bottomNavItems = listOf(
-        Screen.Home,
-        Screen.Workout,
-        Screen.Analytics,
-        Screen.Profile
-    )
-
+    val bottomNavItems = listOf(Screen.Home, Screen.Workout, Screen.Analytics, Screen.Profile)
     val isBottomNavVisible = bottomNavItems.any { it.route == currentRoute }
 
     Scaffold(
@@ -87,9 +87,7 @@ fun MainAppScreen(
                 ) {
                     bottomNavItems.forEach { screen ->
                         NavigationBarItem(
-                            icon = {
-                                Icon(screen.icon!!, contentDescription = screen.title)
-                            },
+                            icon = { Icon(screen.icon!!, contentDescription = screen.title) },
                             label = { Text(screen.title) },
                             selected = currentRoute == screen.route,
                             colors = NavigationBarItemDefaults.colors(
@@ -100,7 +98,6 @@ fun MainAppScreen(
                                 indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
                             ),
                             onClick = {
-                                // ✅ Don't navigate if already on this tab
                                 if (currentRoute != screen.route) {
                                     navController.navigate(screen.route) {
                                         popUpTo(navController.graph.findStartDestination().id) {
@@ -119,10 +116,8 @@ fun MainAppScreen(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = if (isLoggedIn == true) Screen.Home.route
-            else Screen.Login.route,
+            startDestination = if (isLoggedIn == true) Screen.Home.route else Screen.Login.route,
             modifier = Modifier.padding(innerPadding),
-            // ✅ Remove all animations — instant switching, no lag
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
             popEnterTransition = { EnterTransition.None },
@@ -153,16 +148,12 @@ fun MainAppScreen(
                 )
             }
             composable(Screen.Home.route) {
-                // ✅ Hoisted ViewModel passed — no recreation
                 DashboardScreen(
-                    onStartWorkout = {
-                        navController.navigate(Screen.Workout.route)
-                    },
+                    onStartWorkout = { navController.navigate(Screen.Workout.route) },
                     viewModel = dashboardViewModel
                 )
             }
             composable(Screen.Workout.route) {
-                // ✅ Hoisted ViewModel passed — no recreation
                 WorkoutSessionScreen(
                     onFinish = {
                         navController.navigate(Screen.Home.route) {
@@ -173,14 +164,11 @@ fun MainAppScreen(
                 )
             }
             composable(Screen.Analytics.route) {
-                // ✅ Hoisted ViewModel passed — no recreation
                 AnalyticsScreen(viewModel = analyticsViewModel)
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(
-                    onNavigateToHistory = {
-                        navController.navigate(Screen.History.route)
-                    },
+                    onNavigateToHistory = { navController.navigate(Screen.History.route) },
                     onLogout = {
                         navController.navigate(Screen.Login.route) {
                             popUpTo(0) { inclusive = true }

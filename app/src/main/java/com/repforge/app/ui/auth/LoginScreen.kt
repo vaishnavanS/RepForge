@@ -1,30 +1,41 @@
 package com.repforge.app.ui.auth
 
-<<<<<<< HEAD
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-=======
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
->>>>>>> 72daa16 (Modified for better version)
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-<<<<<<< HEAD
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-=======
 import androidx.compose.ui.graphics.Brush
->>>>>>> 72daa16 (Modified for better version)
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -44,184 +55,11 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-<<<<<<< HEAD
-    val NavyBlue = Color(0xFF000080)
-    val LightBg = Color(0xFFF0F4FF)
-
-    // ✅ Entire screen scrollable — fixes "Don't have an account" cut off
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(LightBg)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 28.dp)
-            .padding(bottom = 32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(64.dp))
-
-        // Logo
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(NavyBlue),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                "RF",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Black,
-                color = Color.White
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "REPFORGE",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Black,
-            color = NavyBlue,
-            letterSpacing = 4.sp
-        )
-        Text(
-            text = "Intelligent Strength Assistant",
-            fontSize = 13.sp,
-            color = NavyBlue.copy(alpha = 0.5f),
-            letterSpacing = 1.sp
-        )
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // White card
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-                .background(Color.White)
-                .padding(24.dp)
-        ) {
-            Column {
-                Text(
-                    "Welcome back",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = NavyBlue
-                )
-                Text(
-                    "Sign in to continue your journey",
-                    fontSize = 13.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 24.dp)
-                )
-
-                // Email
-                Text(
-                    "EMAIL",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = NavyBlue.copy(alpha = 0.6f),
-                    letterSpacing = 1.sp
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("your@email.com", color = Color.Gray) },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Filled.Email,
-                            contentDescription = null,
-                            tint = NavyBlue.copy(alpha = 0.5f)
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = NavyBlue,
-                        unfocusedBorderColor = Color.LightGray,
-                        focusedTextColor = NavyBlue,
-                        unfocusedTextColor = Color.DarkGray
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Password
-                Text(
-                    "PASSWORD",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = NavyBlue.copy(alpha = 0.6f),
-                    letterSpacing = 1.sp
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("••••••••", color = Color.Gray) },
-                    leadingIcon = {
-                        Icon(
-                            Icons.Filled.Lock,
-                            contentDescription = null,
-                            tint = NavyBlue.copy(alpha = 0.5f)
-                        )
-                    },
-                    trailingIcon = {
-                        TextButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Text(
-                                if (passwordVisible) "Hide" else "Show",
-                                fontSize = 12.sp,
-                                color = NavyBlue
-                            )
-                        }
-                    },
-                    visualTransformation = if (passwordVisible)
-                        VisualTransformation.None
-                    else
-                        PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = NavyBlue,
-                        unfocusedBorderColor = Color.LightGray,
-                        focusedTextColor = NavyBlue,
-                        unfocusedTextColor = Color.DarkGray
-                    )
-                )
-
-                // Error message
-                if (errorMessage != null) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFFFFEBEE))
-                            .padding(12.dp)
-                    ) {
-                        Text(
-                            errorMessage!!,
-                            color = Color(0xFFB00020),
-                            fontSize = 13.sp
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Sign in button
-=======
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(
+                Brush.verticalGradient(
                     listOf(
                         MaterialTheme.colorScheme.background,
                         MaterialTheme.colorScheme.surface
@@ -235,67 +73,91 @@ fun LoginScreen(
                 .fillMaxWidth()
                 .padding(24.dp),
             shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f)),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f))
         ) {
             Column(
-                modifier = Modifier.padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
+                Box(
+                    modifier = Modifier
+                        .size(72.dp)
+                        .background(
+                            Brush.linearGradient(
+                                listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.secondary
+                                )
+                            ),
+                            shape = RoundedCornerShape(22.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("RF", fontSize = 26.sp, fontWeight = FontWeight.Black, color = MaterialTheme.colorScheme.onPrimary)
+                }
+
                 Text(
                     text = "REPFORGE",
-                    fontSize = 32.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    letterSpacing = 2.sp
                 )
                 Text(
                     text = "Enter the future of training",
-                    fontSize = 15.sp,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
 
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Email") },
+                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
                         focusedLabelColor = MaterialTheme.colorScheme.primary,
                         cursorColor = MaterialTheme.colorScheme.primary
                     )
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Password") },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+                    trailingIcon = {
+                        TextButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Text(if (passwordVisible) "Hide" else "Show")
+                        }
+                    },
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
                         focusedLabelColor = MaterialTheme.colorScheme.primary,
                         cursorColor = MaterialTheme.colorScheme.primary
                     )
                 )
-
-                Spacer(modifier = Modifier.height(24.dp))
 
                 if (errorMessage != null) {
                     Text(
                         text = errorMessage!!,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        fontSize = 13.sp,
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
 
->>>>>>> 72daa16 (Modified for better version)
                 Button(
                     onClick = {
                         viewModel.login(
@@ -305,83 +167,16 @@ fun LoginScreen(
                             onError = { errorMessage = it }
                         )
                     },
-<<<<<<< HEAD
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = NavyBlue
-                    )
-                ) {
-                    Text(
-                        "SIGN IN",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp,
-                        letterSpacing = 2.sp,
-                        color = Color.White
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                TextButton(
-                    onClick = { },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text(
-                        "Forgot Password?",
-                        color = NavyBlue.copy(alpha = 0.7f),
-                        fontSize = 13.sp
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // ✅ This is now always visible — not cut off
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                "Don't have an account? ",
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
-            TextButton(onClick = onNavigateToSignup) {
-                Text(
-                    "Create one",
-                    color = NavyBlue,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
-                )
-=======
-                    modifier = Modifier.fillMaxWidth().height(50.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text("LOGIN")
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    TextButton(onClick = onNavigateToSignup) {
-                        Text("Create Account")
-                    }
-                    TextButton(onClick = { /* TODO: Forgot Password */ }) {
-                        Text("Forgot Password?")
-                    }
+                    Text("Sign in")
                 }
->>>>>>> 72daa16 (Modified for better version)
+
+                TextButton(onClick = onNavigateToSignup) {
+                    Text("Create account")
+                }
             }
         }
     }
