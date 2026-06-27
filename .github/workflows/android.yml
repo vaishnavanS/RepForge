@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: Build Android APK
 
 on:
@@ -29,3 +30,33 @@ jobs:
         with:
           name: RepForge-Debug
           path: app/build/outputs/apk/debug/app-debug.apk
+=======
+name: Build Android APK
+on: [push, workflow_dispatch] # Triggers on push or manual start
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Make Gradle Executable
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RepForge-App-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+>>>>>>> 72daa16 (Modified for better version)

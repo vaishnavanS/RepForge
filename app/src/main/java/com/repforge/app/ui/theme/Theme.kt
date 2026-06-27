@@ -14,27 +14,37 @@ import androidx.core.view.WindowCompat
 private val DarkColorScheme = darkColorScheme(
     primary = ElectricGreen,
     secondary = NeonBlue,
-    tertiary = ElectricGreen,
+    tertiary = NeonPurple,
     background = DeepBlack,
     surface = DarkSurface,
+    surfaceVariant = DarkSurfaceVariant,
+    primaryContainer = DarkSurfaceVariant,
+    secondaryContainer = DarkSurfaceVariant,
+    tertiaryContainer = DarkSurfaceVariant,
     onPrimary = DeepBlack,
     onSecondary = DeepBlack,
-    onTertiary = DeepBlack,
+    onTertiary = TextWhite,
     onBackground = TextWhite,
-    onSurface = TextWhite
+    onSurface = TextWhite,
+    onSurfaceVariant = TextWhite
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = NavyBlue,
-    secondary = AccentGrey,
-    tertiary = NavyBlue,
+    secondary = NeonBlue,
+    tertiary = NeonPurple,
     background = CrispWhite,
     surface = LightSurface,
+    surfaceVariant = LightSurfaceVariant,
+    primaryContainer = LightSurfaceVariant,
+    secondaryContainer = LightSurfaceVariant,
+    tertiaryContainer = LightSurfaceVariant,
     onPrimary = CrispWhite,
-    onSecondary = CrispWhite,
-    onTertiary = CrispWhite,
+    onSecondary = TextBlack,
+    onTertiary = TextWhite,
     onBackground = TextBlack,
-    onSurface = TextBlack
+    onSurface = TextBlack,
+    onSurfaceVariant = TextBlack
 )
 
 @Composable

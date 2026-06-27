@@ -16,7 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.viewmodel.compose.viewModel
+<<<<<<< HEAD
 import androidx.navigation.NavGraph.Companion.findStartDestination
+=======
+>>>>>>> 72daa16 (Modified for better version)
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -75,9 +78,13 @@ fun MainAppScreen(
     val isBottomNavVisible = bottomNavItems.any { it.route == currentRoute }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             if (isBottomNavVisible) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+                    tonalElevation = 0.dp
+                ) {
                     bottomNavItems.forEach { screen ->
                         NavigationBarItem(
                             icon = {
@@ -85,6 +92,13 @@ fun MainAppScreen(
                             },
                             label = { Text(screen.title) },
                             selected = currentRoute == screen.route,
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
+                            ),
                             onClick = {
                                 // ✅ Don't navigate if already on this tab
                                 if (currentRoute != screen.route) {
