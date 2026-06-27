@@ -143,7 +143,7 @@ fun DashboardScreen(
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
-                            text = "Day ${state.nextWorkout.dayIndex} • ${state.nextWorkout.focus}",
+                            text = "Day ${state.nextWorkout.dayIndex} • ${state.nextWorkout.title}",
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.74f)
                         )

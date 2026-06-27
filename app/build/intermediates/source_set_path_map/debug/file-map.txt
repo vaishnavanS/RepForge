@@ -1,0 +1,60 @@
+com.repforge.app-material-icons-core-release-0 /home/vaishnavan/.gradle/caches/transforms-3/08e5441f0b33dc59a0e73087d394209f/transformed/material-icons-core-release/res
+com.repforge.app-material-icons-extended-release-1 /home/vaishnavan/.gradle/caches/transforms-3/107277d304c1c2798b71d772886d5ad0/transformed/material-icons-extended-release/res
+com.repforge.app-navigation-common-2.7.7-2 /home/vaishnavan/.gradle/caches/transforms-3/16d638bc6644ab8b11ed8060126ad8a1/transformed/navigation-common-2.7.7/res
+com.repforge.app-lifecycle-runtime-2.7.0-3 /home/vaishnavan/.gradle/caches/transforms-3/1b72b796945b0a5ddbd2dfab103d83d8/transformed/lifecycle-runtime-2.7.0/res
+com.repforge.app-material-ripple-release-4 /home/vaishnavan/.gradle/caches/transforms-3/1f6c101e788d56613fa0c9107306d0e8/transformed/material-ripple-release/res
+com.repforge.app-ui-release-5 /home/vaishnavan/.gradle/caches/transforms-3/365043ea36a276af1355799e0f438639/transformed/ui-release/res
+com.repforge.app-ui-util-release-6 /home/vaishnavan/.gradle/caches/transforms-3/3864f79adf9fcb91a6ef8418b7fcae6d/transformed/ui-util-release/res
+com.repforge.app-savedstate-ktx-1.2.1-7 /home/vaishnavan/.gradle/caches/transforms-3/3970ef3d6a7249b9e40ecad817635940/transformed/savedstate-ktx-1.2.1/res
+com.repforge.app-navigation-runtime-ktx-2.7.7-8 /home/vaishnavan/.gradle/caches/transforms-3/3a798e927206a2cfc964770a48bcae25/transformed/navigation-runtime-ktx-2.7.7/res
+com.repforge.app-ui-tooling-preview-release-9 /home/vaishnavan/.gradle/caches/transforms-3/3b1e62c1309af39f89d7e9754b1466ae/transformed/ui-tooling-preview-release/res
+com.repforge.app-lifecycle-runtime-compose-2.7.0-10 /home/vaishnavan/.gradle/caches/transforms-3/3c4f4c6296b98a1af19068ea99303d80/transformed/lifecycle-runtime-compose-2.7.0/res
+com.repforge.app-material3-release-11 /home/vaishnavan/.gradle/caches/transforms-3/407a0269c10d9052d16ce7adc2120912/transformed/material3-release/res
+com.repforge.app-savedstate-1.2.1-12 /home/vaishnavan/.gradle/caches/transforms-3/4af096b457e1b0349b45c4924ee8f81e/transformed/savedstate-1.2.1/res
+com.repforge.app-lifecycle-viewmodel-ktx-2.7.0-13 /home/vaishnavan/.gradle/caches/transforms-3/4afc2790daba6efad830a2587b71cd1b/transformed/lifecycle-viewmodel-ktx-2.7.0/res
+com.repforge.app-navigation-compose-2.7.7-14 /home/vaishnavan/.gradle/caches/transforms-3/54a18450120ae8ee38789afe22e6f2e3/transformed/navigation-compose-2.7.7/res
+com.repforge.app-room-runtime-2.6.1-15 /home/vaishnavan/.gradle/caches/transforms-3/55b707e8a2ba36ee02dca3fead72b8ef/transformed/room-runtime-2.6.1/res
+com.repforge.app-material-release-16 /home/vaishnavan/.gradle/caches/transforms-3/599e3a931486f9c71e4bfd51bf28a680/transformed/material-release/res
+com.repforge.app-ui-test-manifest-1.6.1-17 /home/vaishnavan/.gradle/caches/transforms-3/6001839c9c98102f01e20217c35fc04d/transformed/ui-test-manifest-1.6.1/res
+com.repforge.app-lifecycle-viewmodel-compose-2.7.0-18 /home/vaishnavan/.gradle/caches/transforms-3/6f6550ed828109ea98452b99c744c507/transformed/lifecycle-viewmodel-compose-2.7.0/res
+com.repforge.app-activity-ktx-1.8.2-19 /home/vaishnavan/.gradle/caches/transforms-3/7615da4a27e53546d1b0cb0a66be5196/transformed/activity-ktx-1.8.2/res
+com.repforge.app-datastore-1.0.0-20 /home/vaishnavan/.gradle/caches/transforms-3/790d5d1a425e91d7bb0291a02b588d07/transformed/datastore-1.0.0/res
+com.repforge.app-runtime-saveable-release-21 /home/vaishnavan/.gradle/caches/transforms-3/7a244f5922b56fe20dd75f39f4634b2d/transformed/runtime-saveable-release/res
+com.repforge.app-emoji2-1.3.0-22 /home/vaishnavan/.gradle/caches/transforms-3/7a725606325a094aac9268a317e13f78/transformed/emoji2-1.3.0/res
+com.repforge.app-lifecycle-process-2.7.0-23 /home/vaishnavan/.gradle/caches/transforms-3/80ce1764db5cd871d19d89938dbf895b/transformed/lifecycle-process-2.7.0/res
+com.repforge.app-activity-1.8.2-24 /home/vaishnavan/.gradle/caches/transforms-3/81fd1000c85701b9ee8b2c4ba9476a59/transformed/activity-1.8.2/res
+com.repforge.app-sqlite-2.4.0-25 /home/vaishnavan/.gradle/caches/transforms-3/8bd30aebccc0135f99a8bd3f5f96c701/transformed/sqlite-2.4.0/res
+com.repforge.app-annotation-experimental-1.4.0-26 /home/vaishnavan/.gradle/caches/transforms-3/90109b30469a45b14d7d69de56c75ed7/transformed/annotation-experimental-1.4.0/res
+com.repforge.app-ui-tooling-release-27 /home/vaishnavan/.gradle/caches/transforms-3/91fa8d24b67c4a4ce633b2b5ad2f464b/transformed/ui-tooling-release/res
+com.repforge.app-datastore-preferences-1.0.0-28 /home/vaishnavan/.gradle/caches/transforms-3/9456289bd5553c403b406daecf4f74b1/transformed/datastore-preferences-1.0.0/res
+com.repforge.app-animation-release-29 /home/vaishnavan/.gradle/caches/transforms-3/9717a29f9821ab5e23b8564eed885fc1/transformed/animation-release/res
+com.repforge.app-animation-core-release-30 /home/vaishnavan/.gradle/caches/transforms-3/97a87da7811a43490bb3c1d0dc0c7049/transformed/animation-core-release/res
+com.repforge.app-ui-graphics-release-31 /home/vaishnavan/.gradle/caches/transforms-3/98a295dd36db535d21082431c0af7806/transformed/ui-graphics-release/res
+com.repforge.app-profileinstaller-1.3.0-32 /home/vaishnavan/.gradle/caches/transforms-3/9b4f309fc41698f6c246e21fafbfda3f/transformed/profileinstaller-1.3.0/res
+com.repforge.app-room-ktx-2.6.1-33 /home/vaishnavan/.gradle/caches/transforms-3/9dadd7f814be6071f0cbae78c33e5fe8/transformed/room-ktx-2.6.1/res
+com.repforge.app-activity-compose-1.8.2-34 /home/vaishnavan/.gradle/caches/transforms-3/9e4e9eb4458da266603f20cba6afb61a/transformed/activity-compose-1.8.2/res
+com.repforge.app-runtime-release-35 /home/vaishnavan/.gradle/caches/transforms-3/a376908c66795af90d154adef0f9c2a7/transformed/runtime-release/res
+com.repforge.app-customview-poolingcontainer-1.0.0-36 /home/vaishnavan/.gradle/caches/transforms-3/ad07af00fd74541171701d87962c7631/transformed/customview-poolingcontainer-1.0.0/res
+com.repforge.app-lifecycle-viewmodel-2.7.0-37 /home/vaishnavan/.gradle/caches/transforms-3/b19d13f897f68525a97d09ef297fd215/transformed/lifecycle-viewmodel-2.7.0/res
+com.repforge.app-core-ktx-1.12.0-38 /home/vaishnavan/.gradle/caches/transforms-3/b5d44adc56c635df373711516b8f7b74/transformed/core-ktx-1.12.0/res
+com.repforge.app-lifecycle-viewmodel-savedstate-2.7.0-39 /home/vaishnavan/.gradle/caches/transforms-3/b6e3123a8a64ed0d6260804c7c8f5b19/transformed/lifecycle-viewmodel-savedstate-2.7.0/res
+com.repforge.app-navigation-common-ktx-2.7.7-40 /home/vaishnavan/.gradle/caches/transforms-3/b6ef9e96fd54c3e46187ef94763864a5/transformed/navigation-common-ktx-2.7.7/res
+com.repforge.app-ui-unit-release-41 /home/vaishnavan/.gradle/caches/transforms-3/b7810d6b94df83eaaa8d1cd6d4c46f86/transformed/ui-unit-release/res
+com.repforge.app-navigation-runtime-2.7.7-42 /home/vaishnavan/.gradle/caches/transforms-3/c1b08ab39771017901636e8effe9fcaf/transformed/navigation-runtime-2.7.7/res
+com.repforge.app-foundation-release-43 /home/vaishnavan/.gradle/caches/transforms-3/c4207aa203fe9c138dd0c248ec915d33/transformed/foundation-release/res
+com.repforge.app-lifecycle-runtime-ktx-2.7.0-44 /home/vaishnavan/.gradle/caches/transforms-3/c68b3f252160f76155de0b229dcfa013/transformed/lifecycle-runtime-ktx-2.7.0/res
+com.repforge.app-lifecycle-livedata-core-2.7.0-45 /home/vaishnavan/.gradle/caches/transforms-3/cbe6077000c02e40411e38e91bd9d121/transformed/lifecycle-livedata-core-2.7.0/res
+com.repforge.app-ui-geometry-release-46 /home/vaishnavan/.gradle/caches/transforms-3/cf9c8c18082d576c301536152779315b/transformed/ui-geometry-release/res
+com.repforge.app-core-runtime-2.2.0-47 /home/vaishnavan/.gradle/caches/transforms-3/d2533c780052e9999c5adcdbef21a946/transformed/core-runtime-2.2.0/res
+com.repforge.app-sqlite-framework-2.4.0-48 /home/vaishnavan/.gradle/caches/transforms-3/d282c490cc98c33673f1f28ed5acfbb7/transformed/sqlite-framework-2.4.0/res
+com.repforge.app-ui-text-release-49 /home/vaishnavan/.gradle/caches/transforms-3/d59712e666ab2a0c9a05b5da270f8c37/transformed/ui-text-release/res
+com.repforge.app-ui-tooling-data-release-50 /home/vaishnavan/.gradle/caches/transforms-3/ecbe68284140a8495df8f7ac958f501d/transformed/ui-tooling-data-release/res
+com.repforge.app-core-1.12.0-51 /home/vaishnavan/.gradle/caches/transforms-3/eed728b5651b46237d4c1a6477d07400/transformed/core-1.12.0/res
+com.repforge.app-foundation-layout-release-52 /home/vaishnavan/.gradle/caches/transforms-3/fcc1ef542c902769ce8686a2a616f2c1/transformed/foundation-layout-release/res
+com.repforge.app-startup-runtime-1.1.1-53 /home/vaishnavan/.gradle/caches/transforms-3/ff0030ebc03dd1a635a9a31342e71294/transformed/startup-runtime-1.1.1/res
+com.repforge.app-resValues-54 /run/media/vaishnavan/ACER/Users/Vaishnavan S/project/RepForge/app/build/generated/res/resValues/debug
+com.repforge.app-packageDebugResources-55 /run/media/vaishnavan/ACER/Users/Vaishnavan S/project/RepForge/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.repforge.app-packageDebugResources-56 /run/media/vaishnavan/ACER/Users/Vaishnavan S/project/RepForge/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.repforge.app-merged_res-57 /run/media/vaishnavan/ACER/Users/Vaishnavan S/project/RepForge/app/build/intermediates/merged_res/debug
+com.repforge.app-debug-58 /run/media/vaishnavan/ACER/Users/Vaishnavan S/project/RepForge/app/src/debug/res
+com.repforge.app-main-59 /run/media/vaishnavan/ACER/Users/Vaishnavan S/project/RepForge/app/src/main/res
