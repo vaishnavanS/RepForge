@@ -17,6 +17,14 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.CenterAlignedTopAppBarDefaults
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,10 +50,12 @@ import com.repforge.app.ui.home.DashboardViewModel
 import com.repforge.app.ui.profile.ProfileScreen
 import com.repforge.app.ui.workout.WorkoutSessionScreen
 import com.repforge.app.ui.workout.WorkoutViewModel
+import com.repforge.app.ui.onboarding.OnboardingScreen
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector?) {
     object Login : Screen("login", "Login", null)
     object Signup : Screen("signup", "Signup", null)
+    object Onboarding : Screen("onboarding", "", null)
     object Home : Screen("home", "Home", Icons.Filled.Home)
     object Workout : Screen("workout", "Workout", Icons.Filled.FitnessCenter)
     object Analytics : Screen("analytics", "Analytics", Icons.Filled.Analytics)
@@ -58,6 +68,7 @@ fun MainAppScreen(
     authViewModel: AuthViewModel = viewModel()
 ) {
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
+    val isOnboarded by authViewModel.isOnboarded.collectAsState()
 
     if (isLoggedIn == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -77,8 +88,34 @@ fun MainAppScreen(
     val bottomNavItems = listOf(Screen.Home, Screen.Workout, Screen.Analytics, Screen.Profile)
     val isBottomNavVisible = bottomNavItems.any { it.route == currentRoute }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     Scaffold(
+        topBar = {
+            if (currentRoute != Screen.Login.route && currentRoute != Screen.Signup.route && currentRoute != Screen.Onboarding.route) {
+                CenterAlignedTopAppBar(
+                    title = { Text(bottomNavItems.find { it.route == currentRoute }?.title ?: "RepForge") },
+                    actions = {
+                        IconButton(onClick = { navController.navigate(Screen.Profile.route) }) {
+                            Icon(Icons.Filled.Person, contentDescription = "Profile")
+                        }
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                )
+            }
+        },
         containerColor = MaterialTheme.colorScheme.background,
+        floatingActionButton = {
+            if (currentRoute == Screen.Home.route) {
+                ExtendedFloatingActionButton(
+                    text = { Text("Start") },
+                    onClick = { navController.navigate(Screen.Workout.route) },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    elevation = FloatingActionButtonDefaults.elevation()
+                )
+            }
+        },
         bottomBar = {
             if (isBottomNavVisible) {
                 NavigationBar(
@@ -116,12 +153,25 @@ fun MainAppScreen(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = if (isLoggedIn == true) Screen.Home.route else Screen.Login.route,
+            startDestination = when {
+                isLoggedIn == null -> Screen.Login.route
+                !isOnboarded -> Screen.Onboarding.route
+                isLoggedIn == true -> Screen.Home.route
+                else -> Screen.Login.route
+            },
             modifier = Modifier.padding(innerPadding),
-            enterTransition = { EnterTransition.None },
-            exitTransition = { ExitTransition.None },
-            popEnterTransition = { EnterTransition.None },
-            popExitTransition = { ExitTransition.None }
+            enterTransition = {
+                androidx.compose.animation.slideInHorizontally(initialOffsetX = { 300 }) + androidx.compose.animation.fadeIn()
+            },
+            exitTransition = {
+                androidx.compose.animation.slideOutHorizontally(targetOffsetX = { -300 }) + androidx.compose.animation.fadeOut()
+            },
+            popEnterTransition = {
+                androidx.compose.animation.slideInHorizontally(initialOffsetX = { -300 }) + androidx.compose.animation.fadeIn()
+            },
+            popExitTransition = {
+                androidx.compose.animation.slideOutHorizontally(targetOffsetX = { 300 }) + androidx.compose.animation.fadeOut()
+            }
         ) {
             composable(Screen.Login.route) {
                 LoginScreen(
@@ -134,6 +184,15 @@ fun MainAppScreen(
                         navController.navigate(Screen.Signup.route)
                     }
                 )
+            }
+            composable(Screen.Onboarding.route) {
+                // Onboarding sets the flag and navigates to login
+                OnboardingScreen(onFinished = {
+                    authViewModel.setOnboarded()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                })
             }
             composable(Screen.Signup.route) {
                 SignupScreen(

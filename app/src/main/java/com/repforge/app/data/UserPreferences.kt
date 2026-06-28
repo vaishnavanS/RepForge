@@ -22,6 +22,7 @@ class UserPreferences(private val context: Context) {
         val FITNESS_GOAL = stringPreferencesKey("fitness_goal")
         val IS_DARK_MODE = booleanPreferencesKey("is_dark_mode")
         val JOIN_DATE_MILLIS = longPreferencesKey("join_date_millis")
+        val IS_ONBOARDED = booleanPreferencesKey("is_onboarded")
     }
 
     val isLoggedInFlow: Flow<Boolean> = context.dataStore.data.map { it[IS_LOGGED_IN] ?: false }
@@ -36,6 +37,7 @@ class UserPreferences(private val context: Context) {
     val joinDateMillisFlow: Flow<Long> = context.dataStore.data.map {
         it[JOIN_DATE_MILLIS] ?: System.currentTimeMillis()
     }
+    val isOnboardedFlow: Flow<Boolean> = context.dataStore.data.map { it[IS_ONBOARDED] ?: false }
 
     // ✅ Updated — now saves password too
     suspend fun saveUserSession(id: String, name: String, email: String, password: String) {
@@ -79,5 +81,9 @@ class UserPreferences(private val context: Context) {
             it[IS_LOGGED_IN] = false
             // Keep IS_REGISTERED, USER_EMAIL, USER_PASSWORD so user can log back in
         }
+    }
+
+    suspend fun setOnboarded(value: Boolean) {
+        context.dataStore.edit { it[IS_ONBOARDED] = value }
     }
 }

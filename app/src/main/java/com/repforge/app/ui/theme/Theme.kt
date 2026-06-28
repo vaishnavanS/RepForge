@@ -10,6 +10,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.repforge.app.ui.theme.AppTypography
+import com.repforge.app.ui.theme.AppShapes
 
 private val DarkColorScheme = darkColorScheme(
     primary = ElectricGreen,
@@ -65,6 +67,8 @@ fun RepForgeTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
+        typography = AppTypography,
+        shapes = AppShapes,
         content = content
     )
 }

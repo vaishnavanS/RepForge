@@ -38,6 +38,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     val joinDateMillis: StateFlow<Long> = prefs.joinDateMillisFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), System.currentTimeMillis())
 
+    val isOnboarded: StateFlow<Boolean> = prefs.isOnboardedFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     fun login(
         email: String,
         pass: String,
@@ -156,5 +159,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
 
     fun logout() {
         viewModelScope.launch { prefs.clearSession() }
+    }
+
+    fun setOnboarded() {
+        viewModelScope.launch { prefs.setOnboarded(true) }
     }
 }
