@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
+import com.repforge.app.ui.common.GradientButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -82,10 +83,9 @@ fun DashboardScreen(
                 Column {
                     Text(
                         text = "REPFORGE",
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Black,
+                        style = MaterialTheme.typography.displayLarge,
                         color = MaterialTheme.colorScheme.primary,
-                        letterSpacing = 3.sp
+                        modifier = Modifier
                     )
                     Text(
                         text = "Neural training cockpit",
@@ -129,34 +129,29 @@ fun DashboardScreen(
                     Column {
                         Text(
                             text = "Today’s focus",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary,
-                            letterSpacing = 1.5.sp
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = state.nextWorkout.title,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.displaySmall,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Text(
                             text = "Day ${state.nextWorkout.dayIndex} • ${state.nextWorkout.title}",
-                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.74f)
                         )
                         Spacer(modifier = Modifier.height(14.dp))
-                        Button(
+                        com.repforge.app.ui.common.GradientButton(
+                            text = "Start session",
                             onClick = onStartWorkout,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                        ) {
-                            Icon(Icons.Default.PlayArrow, contentDescription = null)
-                            Spacer(modifier = Modifier.size(8.dp))
-                            Text("Start session")
-                        }
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .fillMaxWidth()
+                        )
                     }
                 }
             }

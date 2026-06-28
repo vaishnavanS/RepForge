@@ -22,7 +22,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.CenterAlignedTopAppBarDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Text
@@ -31,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.size
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -108,12 +108,13 @@ fun MainAppScreen(
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
             if (currentRoute == Screen.Home.route) {
-                ExtendedFloatingActionButton(
-                    text = { Text("Start") },
+                androidx.compose.material3.FloatingActionButton(
                     onClick = { navController.navigate(Screen.Workout.route) },
                     containerColor = MaterialTheme.colorScheme.primary,
                     elevation = FloatingActionButtonDefaults.elevation()
-                )
+                ) {
+                    Icon(Icons.Filled.FitnessCenter, contentDescription = "Start")
+                }
             }
         },
         bottomBar = {
@@ -124,15 +125,18 @@ fun MainAppScreen(
                 ) {
                     bottomNavItems.forEach { screen ->
                         NavigationBarItem(
-                            icon = { Icon(screen.icon!!, contentDescription = screen.title) },
-                            label = { Text(screen.title) },
+                            icon = {
+                                val selected = currentRoute == screen.route
+                                Icon(screen.icon!!, contentDescription = screen.title, modifier = Modifier.size(if (selected) 28.dp else 22.dp))
+                            },
+                            label = { Text(screen.title, style = MaterialTheme.typography.labelLarge) },
                             selected = currentRoute == screen.route,
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
                                 selectedTextColor = MaterialTheme.colorScheme.primary,
                                 unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.16f)
+                                indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
                             ),
                             onClick = {
                                 if (currentRoute != screen.route) {
