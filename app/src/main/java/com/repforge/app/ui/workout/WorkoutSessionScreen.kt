@@ -5,8 +5,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -25,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.repforge.app.domain.WorkoutRoutine
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,7 +41,23 @@ fun WorkoutSessionScreen(
     val exercises by viewModel.exercises.collectAsState()
     val selectedDateMillis by viewModel.selectedDateMillis.collectAsState()
     val selectedDayIndex by viewModel.selectedDayIndex.collectAsState()
+    val selectedRoutine by viewModel.selectedRoutine.collectAsState()
     val allDays = viewModel.allWorkoutDays
+
+    val routineQuote = remember(selectedRoutine) {
+        when (selectedRoutine) {
+            WorkoutRoutine.PUSH_PULL_LEGS -> listOf(
+                "Push, pull, legs: the proven 8-week strength block.",
+                "Consistency with PPL builds power, size, and recovery.",
+                "Every rep counts when you stick with the PPL rhythm."
+            ).random()
+            WorkoutRoutine.BRO_SPLIT -> listOf(
+                "Bro split drives early growth through focused muscle days.",
+                "Chest, back, legs, shoulders, arms — all in a winning cycle.",
+                "Fast results come from intensity, recovery, and smart split structure."
+            ).random()
+        }
+    }
 
     var showDatePicker by remember { mutableStateOf(false) }
     val dateFormatter = remember { SimpleDateFormat("EEE, MMM dd yyyy", Locale.getDefault()) }
@@ -149,12 +168,47 @@ fun WorkoutSessionScreen(
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    RoutineChip(
+                        label = WorkoutRoutine.PUSH_PULL_LEGS.displayName,
+                        selected = selectedRoutine == WorkoutRoutine.PUSH_PULL_LEGS,
+                        onClick = { viewModel.selectRoutine(WorkoutRoutine.PUSH_PULL_LEGS) }
+                    )
+                    RoutineChip(
+                        label = WorkoutRoutine.BRO_SPLIT.displayName,
+                        selected = selectedRoutine == WorkoutRoutine.BRO_SPLIT,
+                        onClick = { viewModel.selectRoutine(WorkoutRoutine.BRO_SPLIT) }
+                    )
+                }
+                Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = "${exercises.size} exercises",
+                    text = "${exercises.size} exercises · ${selectedRoutine.displayName} plan",
                     fontSize = 13.sp,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                 )
-
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = if (selectedRoutine == WorkoutRoutine.PUSH_PULL_LEGS)
+                        "Commit to this PPL schedule for at least 8 weeks — the best way to progress through push, pull, and legs consistently."
+                    else
+                        "The Bro Split is built for fast early growth with focused muscle days and recovery-driven volume.",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                    lineHeight = 18.sp
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = "\"$routineQuote\"",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Date picker row
@@ -289,6 +343,26 @@ fun WorkoutSessionScreen(
 
             item { Spacer(modifier = Modifier.height(100.dp)) }
         }
+    }
+}
+
+@Composable
+private fun RoutineChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(18.dp))
+            .background(
+                if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                else MaterialTheme.colorScheme.surface
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+    ) {
+        Text(
+            text = label,
+            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+            fontWeight = if (selected) FontWeight.ExtraBold else FontWeight.SemiBold
+        )
     }
 }
 

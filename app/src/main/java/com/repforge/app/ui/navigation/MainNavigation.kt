@@ -105,7 +105,15 @@ fun MainAppScreen(
                 CenterAlignedTopAppBar(
                     title = { Text(bottomNavItems.find { it.route == currentRoute }?.title ?: "RepForge") },
                     actions = {
-                        IconButton(onClick = { navController.navigate(Screen.Profile.route) }) {
+                        IconButton(onClick = {
+                            navController.navigate(Screen.Profile.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }) {
                             Icon(Icons.Filled.Person, contentDescription = "Profile")
                         }
                     },
@@ -230,7 +238,12 @@ fun MainAppScreen(
                 WorkoutSessionScreen(
                     onFinish = {
                         navController.navigate(Screen.Home.route) {
-                            popUpTo(Screen.Home.route) { inclusive = false }
+                            popUpTo(Screen.Home.route) {
+                                inclusive = false
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
                     },
                     viewModel = workoutViewModel

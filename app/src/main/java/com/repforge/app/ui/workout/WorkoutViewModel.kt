@@ -5,8 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.repforge.app.data.AppDatabase
 import com.repforge.app.data.entities.ExerciseLog
-import com.repforge.app.domain.PplEngine
 import com.repforge.app.domain.WorkoutDay
+import com.repforge.app.domain.WorkoutRoutine
+import com.repforge.app.domain.getNextWorkout
+import com.repforge.app.domain.getRoutineDays
 import com.repforge.app.repository.WorkoutRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,7 +49,11 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     private val _selectedDayIndex = MutableStateFlow(0)
     val selectedDayIndex: StateFlow<Int> = _selectedDayIndex
 
-    val allWorkoutDays = PplEngine.sixDaySplit
+    private val _selectedRoutine = MutableStateFlow(WorkoutRoutine.PUSH_PULL_LEGS)
+    val selectedRoutine: StateFlow<WorkoutRoutine> = _selectedRoutine
+
+    val allWorkoutDays: List<WorkoutDay>
+        get() = getRoutineDays(_selectedRoutine.value)
 
     init {
         loadNextWorkout()
@@ -56,16 +62,25 @@ class WorkoutViewModel(application: Application) : AndroidViewModel(application)
     private fun loadNextWorkout() {
         viewModelScope.launch {
             val lastWorkoutLog = repository.getLastWorkout()
-            val day = PplEngine.getNextWorkout(lastWorkoutLog?.workoutType)
-            val dayIndex = PplEngine.sixDaySplit.indexOf(day).coerceAtLeast(0)
+            val day = getNextWorkout(lastWorkoutLog?.workoutType, _selectedRoutine.value)
+            val dayIndex = getRoutineDays(_selectedRoutine.value).indexOf(day).coerceAtLeast(0)
             _selectedDayIndex.value = dayIndex
             loadExercisesForDay(day)
         }
     }
 
+    fun selectRoutine(routine: WorkoutRoutine) {
+        if (_selectedRoutine.value == routine) return
+        _selectedRoutine.value = routine
+        _selectedDayIndex.value = 0
+        viewModelScope.launch {
+            loadExercisesForDay(getRoutineDays(routine).first())
+        }
+    }
+
     fun selectWorkoutDay(index: Int) {
         _selectedDayIndex.value = index
-        val day = PplEngine.sixDaySplit[index]
+        val day = getRoutineDays(_selectedRoutine.value)[index]
         viewModelScope.launch { loadExercisesForDay(day) }
     }
 
