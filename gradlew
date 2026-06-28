@@ -59,6 +59,26 @@ if [ -n "$JAVA_OPTS" ] ; then
     esac
 fi
 
+# Prefer a JDK 21 installation when available so Android/Kotlin builds work reliably.
+if [ -z "$JAVA_HOME" ] ; then
+    for candidate in \
+        /usr/lib/jvm/java-21-openjdk-amd64 \
+        /usr/lib/jvm/java-1.21.0-openjdk-amd64 \
+        /usr/lib/jvm/temurin-21-jdk-amd64 \
+        /usr/lib/jvm/adoptium-21-jdk-amd64 \
+        /usr/lib/jvm/default-java; do
+        if [ -x "$candidate/bin/java" ] && "$candidate/bin/java" -version 2>&1 | grep -q ' version "21'; then
+            JAVA_HOME="$candidate"
+            break
+        fi
+    done
+fi
+
+if [ -n "$JAVA_HOME" ] ; then
+    export JAVA_HOME
+    export PATH="$JAVA_HOME/bin:$PATH"
+fi
+
 # Warn the user if they are running with an unsupported version of Java.
 # These version checks are based on the versions supported by the Gradle version
 # that generated this script.

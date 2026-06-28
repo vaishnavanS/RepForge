@@ -28,6 +28,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.size
@@ -47,10 +50,11 @@ import com.repforge.app.ui.auth.SignupScreen
 import com.repforge.app.ui.history.HistoryScreen
 import com.repforge.app.ui.home.DashboardScreen
 import com.repforge.app.ui.home.DashboardViewModel
+import com.repforge.app.ui.onboarding.OnboardingScreen
+import com.repforge.app.ui.onboarding.SplashScreen
 import com.repforge.app.ui.profile.ProfileScreen
 import com.repforge.app.ui.workout.WorkoutSessionScreen
 import com.repforge.app.ui.workout.WorkoutViewModel
-import com.repforge.app.ui.onboarding.OnboardingScreen
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector?) {
     object Login : Screen("login", "Login", null)
@@ -69,6 +73,12 @@ fun MainAppScreen(
 ) {
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
     val isOnboarded by authViewModel.isOnboarded.collectAsState()
+    var isSplashComplete by remember { mutableStateOf(false) }
+
+    if (!isSplashComplete) {
+        SplashScreen(onTimeout = { isSplashComplete = true })
+        return
+    }
 
     if (isLoggedIn == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

@@ -13,8 +13,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -25,11 +27,15 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SplashScreen(modifier: Modifier = Modifier, delayMillis: Long = 800, onTimeout: () -> Unit) {
-    val alpha = animateFloatAsState(targetValue = 1f)
+    var visible by remember { mutableStateOf(false) }
+    val alpha = animateFloatAsState(targetValue = if (visible) 1f else 0f)
+
     LaunchedEffect(Unit) {
+        visible = true
         kotlinx.coroutines.delay(delayMillis)
         onTimeout()
     }
+
     Box(
         modifier = modifier
             .fillMaxSize()
